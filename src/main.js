@@ -5,6 +5,7 @@ import Home from "./views/Home.vue";
 import Login from "./views/Login.vue";
 import Register from "./views/Register.vue";
 import SleepSchedule from "./views/SleepSchedule.vue";
+import SleepReport from "./views/SleepReport.vue";
 import "./style.css";
 import authStore from "./stores/authStore";
 
@@ -13,6 +14,7 @@ const routes = [
   { path: "/login", name: "Login", component: Login },
   { path: "/register", name: "Register", component: Register },
   { path: "/sleep-schedule", name: "SleepSchedule", component: SleepSchedule },
+  { path: "/sleep-report", name: "SleepReport", component: SleepReport },
 ];
 
 const router = createRouter({

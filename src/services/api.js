@@ -284,6 +284,58 @@ export const sleepScheduleAPI = {
       );
     }
   },
+
+  // Report bedtime for a specific date
+  async reportBedTime(userId, reportedTimeStr, dateStr) {
+    try {
+      const response = await apiClient.post(
+        "/api/SleepSchedule/reportBedTime",
+        {
+          u: userId,
+          reportedTimeStr,
+          dateStr,
+        }
+      );
+
+      if (response.data.error) {
+        throw new Error(response.data.error);
+      }
+
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to report bedtime"
+      );
+    }
+  },
+
+  // Report wake-up time for a specific date
+  async reportWakeUpTime(userId, reportedTimeStr, dateStr) {
+    try {
+      const response = await apiClient.post(
+        "/api/SleepSchedule/reportWakeUpTime",
+        {
+          u: userId,
+          reportedTimeStr,
+          dateStr,
+        }
+      );
+
+      if (response.data.error) {
+        throw new Error(response.data.error);
+      }
+
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to report wake-up time"
+      );
+    }
+  },
 };
 
 export default apiClient;

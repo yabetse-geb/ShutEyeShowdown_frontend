@@ -10,6 +10,9 @@
           <router-link to="/sleep-schedule" class="nav-link"
             >Sleep Schedule</router-link
           >
+          <router-link to="/sleep-report" class="nav-link"
+            >Report Sleep</router-link
+          >
           <span class="nav-user">Welcome, {{ authStore.getUsername() }}</span>
           <button @click="logout" class="nav-link nav-button">Logout</button>
         </template>
