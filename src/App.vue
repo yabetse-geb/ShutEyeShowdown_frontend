@@ -13,6 +13,9 @@
           <router-link to="/sleep-report" class="nav-link"
             >Report Sleep</router-link
           >
+          <router-link to="/competition-create" class="nav-link"
+            >Create Competition</router-link
+          >
           <span class="nav-user">Welcome, {{ authStore.getUsername() }}</span>
           <button @click="logout" class="nav-link nav-button">Logout</button>
         </template>

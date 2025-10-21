@@ -24,6 +24,9 @@
             <router-link to="/sleep-report" class="btn btn-secondary"
               >Report Sleep Event</router-link
             >
+            <router-link to="/competition-create" class="btn btn-secondary"
+              >Create Competition</router-link
+            >
           </template>
           <template v-else>
             <router-link to="/register" class="btn btn-primary"

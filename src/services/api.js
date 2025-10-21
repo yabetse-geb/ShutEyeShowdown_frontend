@@ -338,4 +338,132 @@ export const sleepScheduleAPI = {
   },
 };
 
+// CompetitionManager API service
+export const competitionManagerAPI = {
+  // Start a new competition
+  async startCompetition(name, participants, startDateStr, endDateStr) {
+    try {
+      const response = await apiClient.post(
+        "/api/CompetitionManager/startCompetition",
+        {
+          name,
+          participants,
+          startDateStr,
+          endDateStr,
+        }
+      );
+
+      if (response.data.error) {
+        throw new Error(response.data.error);
+      }
+
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to start competition"
+      );
+    }
+  },
+
+  // Record a sleep adherence event
+  async recordStat(userId, dateStr, eventType, success) {
+    try {
+      const response = await apiClient.post(
+        "/api/CompetitionManager/recordStat",
+        {
+          u: userId,
+          dateStr,
+          eventType,
+          success,
+        }
+      );
+
+      if (response.data.error) {
+        throw new Error(response.data.error);
+      }
+
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error || error.message || "Failed to record stat"
+      );
+    }
+  },
+
+  // End a competition
+  async endCompetition(competitionId) {
+    try {
+      const response = await apiClient.post(
+        "/api/CompetitionManager/endCompetition",
+        {
+          competitionId,
+        }
+      );
+
+      if (response.data.error) {
+        throw new Error(response.data.error);
+      }
+
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to end competition"
+      );
+    }
+  },
+
+  // Get leaderboard for a competition
+  async getLeaderboard(competitionId) {
+    try {
+      const response = await apiClient.post(
+        "/api/CompetitionManager/_getLeaderboard",
+        {
+          competitionId,
+        }
+      );
+
+      if (response.data.error) {
+        throw new Error(response.data.error);
+      }
+
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to get leaderboard"
+      );
+    }
+  },
+
+  // Remove a participant from competition
+  async removeParticipant(competitionId, userId) {
+    try {
+      const response = await apiClient.post(
+        "/api/CompetitionManager/removeParticipant",
+        {
+          competitionId,
+          userId,
+        }
+      );
+
+      if (response.data.error) {
+        throw new Error(response.data.error);
+      }
+
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to remove participant"
+      );
+    }
+  },
+};
+
 export default apiClient;
