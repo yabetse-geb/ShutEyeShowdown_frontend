@@ -464,6 +464,36 @@ export const competitionManagerAPI = {
       );
     }
   },
+
+  // Get all competitions for a user
+  async getCompetitionsForUser(userId) {
+    try {
+      console.log("API: Getting competitions for user:", userId);
+
+      const response = await apiClient.post(
+        "/api/CompetitionManager/_getCompetitionsForUser",
+        {
+          u: userId,
+        }
+      );
+
+      console.log("API: Raw response:", response);
+      console.log("API: Response data:", response.data);
+
+      if (response.data.error) {
+        throw new Error(response.data.error);
+      }
+
+      return response.data;
+    } catch (error) {
+      console.error("API: Error getting competitions:", error);
+      throw new Error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to get competitions for user"
+      );
+    }
+  },
 };
 
 export default apiClient;

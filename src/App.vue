@@ -16,6 +16,9 @@
           <router-link to="/competition-create" class="nav-link"
             >Create Competition</router-link
           >
+          <router-link to="/competition" class="nav-link"
+            >Competitions</router-link
+          >
           <span class="nav-user">Welcome, {{ authStore.getUsername() }}</span>
           <button @click="logout" class="nav-link nav-button">Logout</button>
         </template>

@@ -79,7 +79,7 @@
 </template>
 
 <script>
-import { sleepScheduleAPI } from "../services/api";
+import { sleepScheduleAPI, competitionManagerAPI } from "../services/api";
 import authStore from "../stores/authStore";
 
 export default {
@@ -135,7 +135,8 @@ export default {
 
       try {
         const userId = authStore.getUserId();
-        if (!userId) {
+        const username = authStore.getUsername();
+        if (!userId || !username) {
           throw new Error("Please log in to report sleep events");
         }
 
@@ -143,17 +144,45 @@ export default {
         const reportedTimeStr = `${this.formData.date}T${this.formData.time}`;
 
         let result;
+        let eventType;
+        let success;
+
         if (this.formData.eventType === "sleeping") {
           result = await sleepScheduleAPI.reportBedTime(
             userId,
             reportedTimeStr,
             this.formData.date
           );
+          eventType = "BEDTIME";
+          success = result.bedTimeSuccess;
         } else {
           result = await sleepScheduleAPI.reportWakeUpTime(
             userId,
             reportedTimeStr,
             this.formData.date
+          );
+          eventType = "WAKETIME";
+          success = result.wakeUpSuccess;
+        }
+
+        // Call recordStat to update competition scores
+        try {
+          await competitionManagerAPI.recordStat(
+            username,
+            this.formData.date,
+            eventType,
+            success
+          );
+          console.log(
+            `Competition score updated: ${eventType} ${
+              success ? "success" : "failure"
+            } for ${username} on ${this.formData.date}`
+          );
+        } catch (competitionError) {
+          // Don't fail the entire operation if competition update fails
+          console.warn(
+            "Failed to update competition score:",
+            competitionError.message
           );
         }
 

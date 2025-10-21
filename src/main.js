@@ -7,6 +7,7 @@ import Register from "./views/Register.vue";
 import SleepSchedule from "./views/SleepSchedule.vue";
 import SleepReport from "./views/SleepReport.vue";
 import CompetitionCreate from "./views/CompetitionCreate.vue";
+import Competition from "./views/Competition.vue";
 import "./style.css";
 import authStore from "./stores/authStore";
 
@@ -21,6 +22,7 @@ const routes = [
     name: "CompetitionCreate",
     component: CompetitionCreate,
   },
+  { path: "/competition", name: "Competition", component: Competition },
 ];
 
 const router = createRouter({

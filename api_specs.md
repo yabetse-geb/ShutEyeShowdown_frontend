@@ -1,5 +1,21 @@
 # API Specification: Accountability Concept
 
+[@api-extraction-from-code](../tools/api-extraction-from-code.md)
+
+[@api-extraction-from-spec](../tools/api-extraction-from-spec.md)
+
+Please add an API spec for the `_getCompetitionsForUser` query I added to CompetitionManager
+
+## CompetitionManager
+
+Specification:
+
+[@CompetitionManager](CompetitionManager/CompetitionManager.md)
+
+Code:
+
+[@implementation](CompetitionManager/implementation.md)
+
 **Purpose:** Enable structured accountability between users by recording their partnerships, adherence tracking preferences, and report frequencies. The concept maintains only the data required to support external systems in generating notifications or summaries—it does not send or deliver messages itself. By storing which types of adherence failures are monitored and when reports should be produced, the concept ensures that each partnership’s accountability data remains accurate, consistent, and ready for use by reporting or notification services.
 
 ---
@@ -467,6 +483,52 @@
 ```
 
 ---
+
+---
+
+### POST /api/CompetitionManager/\_getCompetitionsForUser
+
+**Description:** Retrieves all competitions that a specific user is a participant in.
+
+**Requirements:**
+
+- A user with the given ID `u` must exist.
+
+**Effects:**
+
+- Returns a list of all `Competition` objects where the user is listed as a participant.
+
+**Request Body:**
+
+```json
+{
+  "u": "string"
+}
+```
+
+**Success Response Body (Query):**
+
+```json
+[
+  {
+    "_id": "string",
+    "name": "string",
+    "participants": ["string"],
+    "startDate": "string",
+    "endDate": "string",
+    "active": "boolean",
+    "winners": ["string"]
+  }
+]
+```
+
+**Error Response Body:**
+
+```json
+{
+  "error": "string"
+}
+```
 
 # API Specification: SleepSchedule Concept
 
