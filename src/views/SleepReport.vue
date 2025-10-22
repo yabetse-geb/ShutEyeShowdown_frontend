@@ -26,32 +26,60 @@
         </div>
 
         <div class="form-group">
-          <label for="date" class="form-label">Date</label>
+          <label for="nightDate" class="form-label">Night Being Reported</label>
+          <p class="form-help-text">
+            Select the night (date) you went to bed for this sleep report
+          </p>
           <input
-            id="date"
-            v-model="formData.date"
+            id="nightDate"
+            v-model="formData.nightDate"
             type="date"
             class="form-input"
-            :class="{ error: errors.date }"
+            :class="{ error: errors.nightDate }"
             required
           />
-          <span v-if="errors.date" class="error-message">
-            {{ errors.date }}
+          <span v-if="errors.nightDate" class="error-message">
+            {{ errors.nightDate }}
           </span>
         </div>
 
         <div class="form-group">
-          <label for="time" class="form-label">Time</label>
+          <label for="actualDate" class="form-label"
+            >Actual Sleep Event Date</label
+          >
+          <p class="form-help-text">
+            Enter the actual date when you went to sleep or woke up
+          </p>
           <input
-            id="time"
-            v-model="formData.time"
-            type="time"
+            id="actualDate"
+            v-model="formData.actualDate"
+            type="date"
             class="form-input"
-            :class="{ error: errors.time }"
+            :class="{ error: errors.actualDate }"
             required
           />
-          <span v-if="errors.time" class="error-message">
-            {{ errors.time }}
+          <span v-if="errors.actualDate" class="error-message">
+            {{ errors.actualDate }}
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label for="actualTime" class="form-label"
+            >Actual Sleep Event Time</label
+          >
+          <p class="form-help-text">
+            Enter the specific time when you went to sleep or woke up
+          </p>
+          <input
+            id="actualTime"
+            v-model="formData.actualTime"
+            type="time"
+            class="form-input"
+            :class="{ error: errors.actualTime }"
+            required
+          />
+          <span v-if="errors.actualTime" class="error-message">
+            {{ errors.actualTime }}
           </span>
         </div>
 
@@ -79,7 +107,11 @@
 </template>
 
 <script>
-import { sleepScheduleAPI, competitionManagerAPI } from "../services/api";
+import {
+  sleepScheduleAPI,
+  competitionManagerAPI,
+  accountabilityAPI,
+} from "../services/api";
 import authStore from "../stores/authStore";
 
 export default {
@@ -88,8 +120,9 @@ export default {
     return {
       formData: {
         eventType: "",
-        date: "",
-        time: "",
+        nightDate: "",
+        actualDate: "",
+        actualTime: "",
       },
       errors: {},
       isLoading: false,
@@ -98,8 +131,10 @@ export default {
     };
   },
   mounted() {
-    // Set default date to today
-    this.formData.date = new Date().toLocaleDateString("en-CA");
+    // Set default night date to today
+    this.formData.nightDate = new Date().toLocaleDateString("en-CA");
+    // Set default actual date to today
+    this.formData.actualDate = new Date().toLocaleDateString("en-CA");
   },
   methods: {
     validateForm() {
@@ -111,13 +146,18 @@ export default {
         isValid = false;
       }
 
-      if (!this.formData.date) {
-        this.errors.date = "Please select a date";
+      if (!this.formData.nightDate) {
+        this.errors.nightDate = "Please select the night being reported";
         isValid = false;
       }
 
-      if (!this.formData.time) {
-        this.errors.time = "Please select a time";
+      if (!this.formData.actualDate) {
+        this.errors.actualDate = "Please enter the actual sleep event date";
+        isValid = false;
+      }
+
+      if (!this.formData.actualTime) {
+        this.errors.actualTime = "Please enter the actual sleep event time";
         isValid = false;
       }
 
@@ -140,8 +180,9 @@ export default {
           throw new Error("Please log in to report sleep events");
         }
 
-        // Format the reported time string
-        const reportedTimeStr = `${this.formData.date}T${this.formData.time}`;
+        // Use the selected night date for dateStr and actual date/time for reportedTimeStr
+        const dateStr = this.formData.nightDate; // The night being reported for
+        const reportedTimeStr = `${this.formData.actualDate}T${this.formData.actualTime}`; // Actual sleep event time in YYYY-MM-DDTHH:MM format
 
         let result;
         let eventType;
@@ -151,7 +192,7 @@ export default {
           result = await sleepScheduleAPI.reportBedTime(
             userId,
             reportedTimeStr,
-            this.formData.date
+            dateStr
           );
           eventType = "BEDTIME";
           success = result.bedTimeSuccess;
@@ -159,7 +200,7 @@ export default {
           result = await sleepScheduleAPI.reportWakeUpTime(
             userId,
             reportedTimeStr,
-            this.formData.date
+            dateStr
           );
           eventType = "WAKETIME";
           success = result.wakeUpSuccess;
@@ -169,14 +210,14 @@ export default {
         try {
           await competitionManagerAPI.recordStat(
             username,
-            this.formData.date,
+            dateStr,
             eventType,
             success
           );
           console.log(
             `Competition score updated: ${eventType} ${
               success ? "success" : "failure"
-            } for ${username} on ${this.formData.date}`
+            } for ${username} on ${dateStr}`
           );
         } catch (competitionError) {
           // Don't fail the entire operation if competition update fails
@@ -184,6 +225,22 @@ export default {
             "Failed to update competition score:",
             competitionError.message
           );
+        }
+
+        // Call recordFailure for Accountability system if this was a failure
+        if (!success) {
+          try {
+            await accountabilityAPI.recordFailure(username, dateStr, eventType);
+            console.log(
+              `Accountability failure recorded: ${eventType} failure for ${username} on ${dateStr}`
+            );
+          } catch (accountabilityError) {
+            // Don't fail the entire operation if accountability update fails
+            console.warn(
+              "Failed to record accountability failure:",
+              accountabilityError.message
+            );
+          }
         }
 
         // Show success message with result
@@ -206,8 +263,8 @@ export default {
 
         // Reset form
         this.formData.eventType = "";
-        this.formData.time = "";
-        // Keep the date for convenience
+        this.formData.actualTime = "";
+        // Keep the dates for convenience
       } catch (error) {
         this.errorMessage = error.message;
       } finally {
@@ -273,6 +330,12 @@ export default {
   font-size: 0.9rem;
   font-weight: 600;
   color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.form-help-text {
+  font-size: 0.875rem;
+  color: #6b7280;
   margin-bottom: 0.5rem;
 }
 

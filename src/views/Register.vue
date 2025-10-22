@@ -149,6 +149,9 @@ export default {
           user: response.user,
         });
 
+        // Force reactivity update by dispatching a custom event
+        window.dispatchEvent(new CustomEvent("authStateChanged"));
+
         // Redirect to home page
         this.$router.push("/");
       } catch (error) {

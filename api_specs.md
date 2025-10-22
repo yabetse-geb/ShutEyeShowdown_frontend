@@ -4,17 +4,17 @@
 
 [@api-extraction-from-spec](../tools/api-extraction-from-spec.md)
 
-Please add an API spec for the `_getCompetitionsForUser` query I added to CompetitionManager
+Please add an API spec for the `_getPartnerships` query I added to Accountability
 
-## CompetitionManager
+## Accountability
 
 Specification:
 
-[@CompetitionManager](CompetitionManager/CompetitionManager.md)
+[@Accountability](Accountability/Accountability.md)
 
 Code:
 
-[@implementation](CompetitionManager/implementation.md)
+[@Implementation](Accountability/Implementation.md)
 
 **Purpose:** Enable structured accountability between users by recording their partnerships, adherence tracking preferences, and report frequencies. The concept maintains only the data required to support external systems in generating notifications or summaries—it does not send or deliver messages itself. By storing which types of adherence failures are monitored and when reports should be produced, the concept ensures that each partnership’s accountability data remains accurate, consistent, and ready for use by reporting or notification services.
 
@@ -251,6 +251,51 @@ Code:
 {
   "message": "string"
 }
+```
+
+**Error Response Body:**
+
+```json
+{
+  "error": "string"
+}
+```
+
+---
+
+### POST /api/Accountability/\_getPartnerships
+
+**Description:** Retrieves all partnerships associated with a user, where they are either the primary user or the partner.
+
+**Requirements:**
+
+- (None)
+
+**Effects:**
+
+- Returns an array of all `Partnership` objects where the specified user is either the `user` or the `partner`.
+
+**Request Body:**
+
+```json
+{
+  "user": "string"
+}
+```
+
+**Success Response Body (Query):**
+
+```json
+[
+  {
+    "_id": "string",
+    "user": "string",
+    "partner": "string",
+    "notifyTypes": ["string"],
+    "reportFrequency": "string",
+    "lastReportDate": "string"
+  }
+]
 ```
 
 **Error Response Body:**

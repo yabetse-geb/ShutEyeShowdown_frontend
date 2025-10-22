@@ -496,4 +496,184 @@ export const competitionManagerAPI = {
   },
 };
 
+// Accountability API service
+export const accountabilityAPI = {
+  // Add a new accountability partner
+  async addPartner(user, partner, notifyTypes, reportFrequency) {
+    try {
+      const response = await apiClient.post("/api/Accountability/addPartner", {
+        user,
+        partner,
+        notifyTypes,
+        reportFrequency,
+      });
+
+      if (response.data.error) {
+        throw new Error(response.data.error);
+      }
+
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to add accountability partner"
+      );
+    }
+  },
+
+  // Remove an accountability partner
+  async removePartner(user, partner) {
+    try {
+      const response = await apiClient.post(
+        "/api/Accountability/removePartner",
+        {
+          user,
+          partner,
+        }
+      );
+
+      if (response.data.error) {
+        throw new Error(response.data.error);
+      }
+
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to remove accountability partner"
+      );
+    }
+  },
+
+  // Update partner preferences
+  async updatePreferences(user, partner, notifyTypes, reportFrequency) {
+    try {
+      const response = await apiClient.post(
+        "/api/Accountability/updatePreferences",
+        {
+          user,
+          partner,
+          notifyTypes,
+          reportFrequency,
+        }
+      );
+
+      if (response.data.error) {
+        throw new Error(response.data.error);
+      }
+
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to update partner preferences"
+      );
+    }
+  },
+
+  // Record adherence failure
+  async recordFailure(user, date, failureType) {
+    try {
+      const response = await apiClient.post(
+        "/api/Accountability/recordFailure",
+        {
+          user,
+          date,
+          failureType,
+        }
+      );
+
+      if (response.data.error) {
+        throw new Error(response.data.error);
+      }
+
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to record failure"
+      );
+    }
+  },
+
+  // Report all failures from start to end date
+  async reportAllFailuresFromStartToEnd(user, startDate, endDate) {
+    try {
+      const response = await apiClient.post(
+        "/api/Accountability/reportAllFailuresFromStartToEnd",
+        {
+          user,
+          startDate,
+          endDate,
+        }
+      );
+
+      if (response.data.error) {
+        throw new Error(response.data.error);
+      }
+
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to report failures"
+      );
+    }
+  },
+
+  // Generate notification message
+  async generateNotificationMessage(user, date) {
+    try {
+      const response = await apiClient.post(
+        "/api/Accountability/generateNotificationMessage",
+        {
+          user,
+          date,
+        }
+      );
+
+      if (response.data.error) {
+        throw new Error(response.data.error);
+      }
+
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to generate notification message"
+      );
+    }
+  },
+
+  // Get partnerships for a user
+  async getPartnerships(user) {
+    try {
+      const response = await apiClient.post(
+        "/api/Accountability/_getPartnerships",
+        {
+          user,
+        }
+      );
+
+      if (response.data.error) {
+        throw new Error(response.data.error);
+      }
+
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to get partnerships"
+      );
+    }
+  },
+};
+
 export default apiClient;

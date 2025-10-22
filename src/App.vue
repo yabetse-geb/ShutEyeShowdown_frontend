@@ -6,7 +6,7 @@
       </div>
       <div class="nav-links">
         <router-link to="/" class="nav-link">Home</router-link>
-        <template v-if="authStore.isLoggedIn()">
+        <template v-if="isLoggedIn">
           <router-link to="/sleep-schedule" class="nav-link"
             >Sleep Schedule</router-link
           >
@@ -19,7 +19,10 @@
           <router-link to="/competition" class="nav-link"
             >Competitions</router-link
           >
-          <span class="nav-user">Welcome, {{ authStore.getUsername() }}</span>
+          <router-link to="/accountability" class="nav-link"
+            >Accountability</router-link
+          >
+          <span class="nav-user">Welcome, {{ username }}</span>
           <button @click="logout" class="nav-link nav-button">Logout</button>
         </template>
         <template v-else>
@@ -47,13 +50,46 @@ export default {
   data() {
     return {
       authStore,
+      // Force reactivity by creating a reactive counter
+      authUpdateCounter: 0,
     };
+  },
+  computed: {
+    isLoggedIn() {
+      // Include authUpdateCounter to force reactivity
+      this.authUpdateCounter;
+      return authStore.isLoggedIn();
+    },
+    username() {
+      // Include authUpdateCounter to force reactivity
+      this.authUpdateCounter;
+      return authStore.getUsername();
+    },
   },
   methods: {
     logout() {
       authStore.clearUser();
+      // Force reactivity update
+      this.authUpdateCounter++;
       this.$router.push("/");
     },
+    // Method to force reactivity update (can be called from other components)
+    forceAuthUpdate() {
+      this.authUpdateCounter++;
+    },
+  },
+  mounted() {
+    // Listen for storage changes (when user logs in from another tab)
+    window.addEventListener("storage", (e) => {
+      if (e.key === "shutEyeUser") {
+        this.forceAuthUpdate();
+      }
+    });
+
+    // Listen for custom auth state change events
+    window.addEventListener("authStateChanged", () => {
+      this.forceAuthUpdate();
+    });
   },
 };
 </script>
