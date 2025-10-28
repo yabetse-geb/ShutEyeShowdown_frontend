@@ -188,13 +188,27 @@ export const passwordAuthAPI = {
 // SleepSchedule API service
 export const sleepScheduleAPI = {
   // Add a sleep slot for a specific date
-  async addSleepSlot(userId, bedTimeStr, wakeTimeStr, dateStr) {
+  async addSleepSlot(
+    userId,
+    bedTimeStr,
+    wakeTimeStr,
+    dateStr,
+    toleranceMins = 10
+  ) {
     try {
+      console.log("API: addSleepSlot called with:");
+      console.log("  u:", userId);
+      console.log("  bedTimeStr:", bedTimeStr);
+      console.log("  wakeTimeStr:", wakeTimeStr);
+      console.log("  dateStr:", dateStr);
+      console.log("  toleranceMins:", toleranceMins);
+
       const response = await apiClient.post("/api/SleepSchedule/addSleepSlot", {
         u: userId,
         bedTimeStr,
         wakeTimeStr,
         dateStr,
+        toleranceMins,
       });
 
       if (response.data.error) {
@@ -419,6 +433,7 @@ export const competitionManagerAPI = {
   // Get leaderboard for a competition
   async getLeaderboard(competitionId) {
     try {
+      console.log("API: Fetching leaderboard for competition:", competitionId);
       const response = await apiClient.post(
         "/api/CompetitionManager/_getLeaderboard",
         {
@@ -426,12 +441,28 @@ export const competitionManagerAPI = {
         }
       );
 
+      console.log("API: Leaderboard response:", response.data);
+      console.log("API: Response status:", response.status);
+
       if (response.data.error) {
         throw new Error(response.data.error);
       }
 
+      // Check if the response is an array
+      if (!Array.isArray(response.data)) {
+        console.warn(
+          "API: Leaderboard response is not an array:",
+          response.data
+        );
+        // If it's wrapped in another structure, try to extract it
+        if (response.data.data && Array.isArray(response.data.data)) {
+          return response.data.data;
+        }
+      }
+
       return response.data;
     } catch (error) {
+      console.error("API: Leaderboard error:", error);
       throw new Error(
         error.response?.data?.error ||
           error.message ||
@@ -491,6 +522,32 @@ export const competitionManagerAPI = {
         error.response?.data?.error ||
           error.message ||
           "Failed to get competitions for user"
+      );
+    }
+  },
+
+  // Get reported dates for a user in a competition
+  async getReportedDates(competitionId, userId, eventType) {
+    try {
+      const response = await apiClient.post(
+        "/api/CompetitionManager/_getReportedDates",
+        {
+          competitionId,
+          userId,
+          eventType,
+        }
+      );
+
+      if (response.data.error) {
+        throw new Error(response.data.error);
+      }
+
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to get reported dates"
       );
     }
   },

@@ -257,12 +257,21 @@ export default {
           allParticipants.push(currentUsername);
         }
 
+        console.log("Creating competition with data:", {
+          name: this.formData.name,
+          participants: allParticipants,
+          startDate: this.formData.startDate,
+          endDate: this.formData.endDate,
+        });
+
         const result = await competitionManagerAPI.startCompetition(
           this.formData.name,
           allParticipants,
           this.formData.startDate,
           this.formData.endDate
         );
+
+        console.log("Competition created result:", result);
 
         this.successMessage = `Competition "${this.formData.name}" created successfully! Competition ID: ${result.competitionId}`;
 

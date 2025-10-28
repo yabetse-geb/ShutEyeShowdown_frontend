@@ -14,6 +14,10 @@
             next day if it's earlier than bedtime (e.g., 11 PM bedtime, 7 AM
             wake-up = Monday night to Tuesday morning).
           </p>
+          <p class="tolerance-note">
+            <strong>Tolerance Options:</strong> Choose Strict (5 min),
+            Recommended (10 min), or Flexible (30 min) for each day.
+          </p>
         </div>
       </div>
 
@@ -55,6 +59,21 @@
                 <span v-if="errors[`${day}.wakeup`]" class="error-message">
                   {{ errors[`${day}.wakeup`] }}
                 </span>
+              </div>
+
+              <div class="time-input-group">
+                <label :for="`tolerance-${index}`" class="time-label"
+                  >Tolerance</label
+                >
+                <select
+                  :id="`tolerance-${index}`"
+                  v-model="schedule[day].tolerance"
+                  class="time-input tolerance-input"
+                >
+                  <option value="5">5 min (Strict)</option>
+                  <option value="10">10 min (Recommended)</option>
+                  <option value="30">30 min (Flexible)</option>
+                </select>
               </div>
             </div>
           </div>
@@ -101,13 +120,13 @@ export default {
         "Sunday",
       ],
       schedule: {
-        Monday: { bedtime: "", wakeup: "" },
-        Tuesday: { bedtime: "", wakeup: "" },
-        Wednesday: { bedtime: "", wakeup: "" },
-        Thursday: { bedtime: "", wakeup: "" },
-        Friday: { bedtime: "", wakeup: "" },
-        Saturday: { bedtime: "", wakeup: "" },
-        Sunday: { bedtime: "", wakeup: "" },
+        Monday: { bedtime: "", wakeup: "", tolerance: "10" },
+        Tuesday: { bedtime: "", wakeup: "", tolerance: "10" },
+        Wednesday: { bedtime: "", wakeup: "", tolerance: "10" },
+        Thursday: { bedtime: "", wakeup: "", tolerance: "10" },
+        Friday: { bedtime: "", wakeup: "", tolerance: "10" },
+        Saturday: { bedtime: "", wakeup: "", tolerance: "10" },
+        Sunday: { bedtime: "", wakeup: "", tolerance: "10" },
       },
       errors: {},
       isLoading: false,
@@ -162,7 +181,13 @@ export default {
 
     formatTimeForInput(timeStr) {
       if (!timeStr) return "";
-      // Convert from "HH:MM" format to "HH:MM" for time input
+      // Handle both ISO date strings and time strings
+      // If it's an ISO date string, extract just the time part
+      if (timeStr.includes("T")) {
+        const timePart = timeStr.split("T")[1];
+        return timePart.substring(0, 5); // Extract HH:MM
+      }
+      // If it's already just a time string, return it
       return timeStr.substring(0, 5);
     },
 
@@ -273,12 +298,21 @@ export default {
               // Ignore errors when removing (slot might not exist)
             }
 
-            // Add new slot
+            // Add new slot - extract tolerance from schedule
+            const toleranceMins = parseInt(this.schedule[day].tolerance) || 10;
+
+            console.log(`Saving schedule for ${day}:`);
+            console.log(`  Bedtime: ${bedTimeStr}`);
+            console.log(`  Wake up: ${wakeTimeStr}`);
+            console.log(`  Date: ${dateStr}`);
+            console.log(`  Tolerance: ${toleranceMins} minutes`);
+
             await sleepScheduleAPI.addSleepSlot(
               userId,
               bedTimeStr,
               wakeTimeStr,
-              dateStr
+              dateStr,
+              toleranceMins
             );
           }
         }
@@ -406,6 +440,16 @@ export default {
   line-height: 1.4;
 }
 
+.schedule-info p + p {
+  margin-top: 0.5rem;
+}
+
+.tolerance-note {
+  font-size: 0.85rem !important;
+  color: #666 !important;
+  font-style: italic;
+}
+
 .schedule-form {
   margin-bottom: 1.5rem;
 }
@@ -419,9 +463,9 @@ export default {
 
 .day-row {
   display: grid;
-  grid-template-columns: 120px 1fr;
+  grid-template-columns: 100px 1fr;
   gap: 1rem;
-  align-items: center;
+  align-items: start;
   padding: 1rem;
   background: #f8f9fa;
   border-radius: 8px;
@@ -441,8 +485,16 @@ export default {
 
 .time-inputs {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 1rem;
+}
+
+.tolerance-input {
+  min-width: 150px;
+}
+
+select.time-input {
+  cursor: pointer;
 }
 
 .time-input-group {
@@ -574,6 +626,10 @@ export default {
   .time-inputs {
     grid-template-columns: 1fr;
     gap: 0.5rem;
+  }
+
+  .tolerance-input {
+    min-width: 100%;
   }
 
   .day-name {

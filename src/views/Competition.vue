@@ -78,6 +78,8 @@
               <div class="col-position">Position</div>
               <div class="col-username">Username</div>
               <div class="col-score">Score</div>
+              <div class="col-report">Bedtime</div>
+              <div class="col-report">Wake-up</div>
             </div>
             <div
               v-for="(entry, index) in leaderboard"
@@ -107,12 +109,20 @@
               </div>
               <div class="col-username">{{ entry.userId }}</div>
               <div class="col-score">{{ entry.totalScore }}</div>
+              <div class="col-report">{{ entry.bedtimeReports || "0/0" }}</div>
+              <div class="col-report">{{ entry.wakeupReports || "0/0" }}</div>
             </div>
           </div>
         </div>
 
-        <!-- End Competition Button -->
+        <!-- Actions -->
         <div class="competition-actions">
+          <button
+            @click="showRulesModal = true"
+            class="btn btn-secondary btn-large"
+          >
+            Score Breakdown Rules
+          </button>
           <button
             v-if="canEndCompetition"
             @click="endCompetition"
@@ -214,6 +224,56 @@
         </div>
       </div>
     </div>
+
+    <!-- Rules Modal -->
+    <div
+      v-if="showRulesModal"
+      class="modal-overlay"
+      @click="showRulesModal = false"
+    >
+      <div class="modal-content" @click.stop>
+        <div class="modal-header">
+          <h2>📊 Score Breakdown Rules</h2>
+          <button @click="showRulesModal = false" class="modal-close">
+            &times;
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="rules-section">
+            <h3>How Scores Work:</h3>
+            <ul class="rules-list">
+              <li><strong>+1</strong> for every successful bedtime report</li>
+              <li><strong>+1</strong> for every successful wake-up report</li>
+              <li>
+                <strong>+0</strong> for every failed report (too early or too
+                late outside your tolerance)
+              </li>
+              <li>
+                <strong>-1</strong> penalty applied at the end for every missing
+                bedtime report
+              </li>
+              <li>
+                <strong>-1</strong> penalty applied at the end for every missing
+                wake-up report
+              </li>
+            </ul>
+
+            <p class="rules-note">
+              <strong>Note:</strong> Success depends on your sleep schedule
+              tolerance settings. Be consistent and report every night to
+              maximize your score!
+            </p>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button @click="showRulesModal = false" class="btn btn-primary">
+            Got it!
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -234,6 +294,7 @@ export default {
       isEnding: false,
       errorMessage: "",
       showFinishedModal: false,
+      showRulesModal: false,
     };
   },
   computed: {
@@ -335,10 +396,79 @@ export default {
         }
 
         // Load leaderboard
+        console.log(
+          "Loading leaderboard for competition:",
+          this.selectedCompetitionId
+        );
         const leaderboardData = await competitionManagerAPI.getLeaderboard(
           this.selectedCompetitionId
         );
-        this.leaderboard = leaderboardData;
+        console.log("Leaderboard data received:", leaderboardData);
+        console.log("Leaderboard data type:", typeof leaderboardData);
+        console.log("Is array?", Array.isArray(leaderboardData));
+
+        // Check if response has error field
+        if (leaderboardData && leaderboardData.error) {
+          console.error("Leaderboard error:", leaderboardData.error);
+          throw new Error(leaderboardData.error);
+        }
+
+        // Ensure it's an array
+        if (!Array.isArray(leaderboardData)) {
+          console.warn("Leaderboard data is not an array:", leaderboardData);
+          this.leaderboard = [];
+        } else {
+          // Calculate total days in competition
+          const startDate = new Date(this.selectedCompetition.startDate);
+          const endDate = new Date(this.selectedCompetition.endDate);
+          const totalDays =
+            Math.floor(
+              (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+            ) + 1;
+
+          // Fetch report counts for each participant
+          this.leaderboard = await Promise.all(
+            leaderboardData.map(async (entry) => {
+              try {
+                const [bedtimeDates, wakeupDates] = await Promise.all([
+                  competitionManagerAPI.getReportedDates(
+                    this.selectedCompetitionId,
+                    entry.userId,
+                    "BEDTIME"
+                  ),
+                  competitionManagerAPI.getReportedDates(
+                    this.selectedCompetitionId,
+                    entry.userId,
+                    "WAKETIME"
+                  ),
+                ]);
+
+                const bedtimeCount = Array.isArray(bedtimeDates)
+                  ? bedtimeDates.length
+                  : 0;
+                const wakeupCount = Array.isArray(wakeupDates)
+                  ? wakeupDates.length
+                  : 0;
+
+                return {
+                  ...entry,
+                  bedtimeReports: `${bedtimeCount}/${totalDays}`,
+                  wakeupReports: `${wakeupCount}/${totalDays}`,
+                };
+              } catch (error) {
+                console.error(
+                  `Error getting report counts for ${entry.userId}:`,
+                  error
+                );
+                return {
+                  ...entry,
+                  bedtimeReports: "0/0",
+                  wakeupReports: "0/0",
+                };
+              }
+            })
+          );
+        }
       } catch (error) {
         this.errorMessage = error.message;
       } finally {
@@ -379,9 +509,18 @@ export default {
       this.showFinishedModal = false;
     },
 
-    formatDate(dateStr) {
-      const date = new Date(dateStr);
-      return date.toLocaleDateString("en-US", {
+    formatDate(dateObj) {
+      // dateObj is an ISO 8601 string in UTC (e.g., "2024-10-29T00:00:00.000Z")
+      // Extract UTC components and display as local date to avoid timezone issues
+      const date = new Date(dateObj);
+      const utcYear = date.getUTCFullYear();
+      const utcMonth = date.getUTCMonth();
+      const utcDay = date.getUTCDate();
+
+      // Create a new Date object in local timezone using the UTC date components
+      const localDate = new Date(utcYear, utcMonth, utcDay);
+
+      return localDate.toLocaleDateString("en-US", {
         year: "numeric",
         month: "long",
         day: "numeric",
@@ -522,7 +661,7 @@ export default {
 
 .table-header {
   display: grid;
-  grid-template-columns: 80px 1fr 100px;
+  grid-template-columns: 80px 1fr 100px 100px 100px;
   background: #3498db;
   color: white;
   font-weight: 600;
@@ -531,7 +670,7 @@ export default {
 
 .table-row {
   display: grid;
-  grid-template-columns: 80px 1fr 100px;
+  grid-template-columns: 80px 1fr 100px 100px 100px;
   padding: 15px;
   border-bottom: 1px solid #e1e8ed;
   transition: background-color 0.3s ease;
@@ -584,6 +723,14 @@ export default {
   justify-content: center;
   font-weight: 600;
   font-size: 1.1rem;
+}
+
+.col-report {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 0.95rem;
 }
 
 .competition-actions {
@@ -717,6 +864,43 @@ export default {
   font-size: 1.4rem;
 }
 
+.rules-section {
+  margin-bottom: 20px;
+}
+
+.rules-section h3 {
+  color: #2c3e50;
+  margin-bottom: 15px;
+  font-size: 1.3rem;
+}
+
+.rules-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+}
+
+.rules-list li {
+  padding: 10px 0;
+  color: #34495e;
+  font-size: 1rem;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+.rules-list li:last-child {
+  border-bottom: none;
+}
+
+.rules-note {
+  padding: 15px;
+  background: #f8f9fa;
+  border-left: 4px solid #3498db;
+  border-radius: 4px;
+  color: #495057;
+  font-size: 0.95rem;
+  margin: 20px 0 0 0;
+}
+
 .podium-section h3 {
   color: #2c3e50;
   margin-bottom: 20px;
@@ -808,6 +992,16 @@ export default {
 
 .btn-danger:hover {
   background: #c0392b;
+}
+
+.btn-secondary {
+  background: #95a5a6;
+  color: white;
+  margin-right: 10px;
+}
+
+.btn-secondary:hover {
+  background: #7f8c8d;
 }
 
 .btn-large {

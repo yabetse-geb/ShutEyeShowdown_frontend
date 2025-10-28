@@ -27,12 +27,12 @@
             <router-link to="/competition-create" class="btn btn-secondary"
               >Create Competition</router-link
             >
-                <router-link to="/competition" class="btn btn-secondary"
-                  >View Competitions</router-link
-                >
-                <router-link to="/accountability" class="btn btn-secondary"
-                  >Accountability Partners</router-link
-                >
+            <router-link to="/competition" class="btn btn-secondary"
+              >View Competitions</router-link
+            >
+            <router-link to="/accountability" class="btn btn-secondary"
+              >Accountability Partners</router-link
+            >
           </template>
           <template v-else>
             <router-link to="/register" class="btn btn-primary"

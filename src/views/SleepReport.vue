@@ -181,7 +181,7 @@ export default {
         }
 
         // Use the selected night date for dateStr and actual date/time for reportedTimeStr
-        const dateStr = this.formData.nightDate; // The night being reported for
+        const dateStr = this.formData.nightDate + "T00:00:00"; // Convert YYYY-MM-DD to local ISO format for backend
         const reportedTimeStr = `${this.formData.actualDate}T${this.formData.actualTime}`; // Actual sleep event time in YYYY-MM-DDTHH:MM format
 
         let result;
