@@ -152,6 +152,22 @@ export const passwordAuthAPI = {
     }
   },
 
+  // Get username for a user id
+  async getUsername(user) {
+    try {
+      const response = await apiClient.post("/api/PasswordAuth/_getUsername", {
+        userId: user,
+      });
+      if (response.data?.error) {
+        throw new Error(response.data.error);
+      }
+      // Spec returns { username: string }
+      return response.data?.username;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || "Failed to get username");
+    }
+  },
+
   // Check if username is registered
   async isRegistered(username) {
     try {
@@ -728,6 +744,78 @@ export const accountabilityAPI = {
         error.response?.data?.error ||
           error.message ||
           "Failed to get partnerships"
+      );
+    }
+  },
+
+  // Get accountability seekers for a user (people who added current user)
+  async getSeekersForUser(user) {
+    try {
+      const response = await apiClient.post(
+        "/api/Accountability/_getAccountabilitySeekersForUser",
+        {
+          mentor: user,
+        }
+      );
+
+      if (response.data.error) {
+        throw new Error(response.data.error);
+      }
+
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to get accountability seekers"
+      );
+    }
+  },
+
+  // Get all stored reports for a user-accountabilitySeeker pair
+  async getAllReports(user, accountabilitySeeker) {
+    try {
+      const response = await apiClient.post(
+        "/api/Accountability/_getAllReports",
+        {
+          user,
+          accountabilitySeeker,
+        }
+      );
+
+      if (response.data?.error) {
+        throw new Error(response.data.error);
+      }
+
+      return Array.isArray(response.data) ? response.data : [];
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error || error.message || "Failed to get reports"
+      );
+    }
+  },
+
+  // Trigger updateReports to generate and append summaries as needed
+  async updateReports(user, date) {
+    try {
+      const response = await apiClient.post(
+        "/api/Accountability/updateReports",
+        {
+          user,
+          date,
+        }
+      );
+
+      if (response.data?.error) {
+        throw new Error(response.data.error);
+      }
+
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to update reports"
       );
     }
   },

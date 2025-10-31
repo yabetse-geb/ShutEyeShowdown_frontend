@@ -22,6 +22,10 @@
           <router-link to="/accountability" class="nav-link"
             >Accountability</router-link
           >
+          <router-link to="/reports-inbox" class="nav-link"
+            >Reports Inbox</router-link
+          >
+          <router-link to="/analytics" class="nav-link">Analytics</router-link>
           <span class="nav-user">Welcome, {{ username }}</span>
           <button @click="logout" class="nav-link nav-button">Logout</button>
         </template>

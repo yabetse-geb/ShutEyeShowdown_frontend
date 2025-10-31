@@ -66,8 +66,27 @@
         </div>
       </div>
 
+      <!-- Accountability Seekers List -->
+      <div v-if="seekers.length > 0" class="partners-section">
+        <h3>Accountability Seekers</h3>
+        <div class="partners-list">
+          <div
+            v-for="(seeker, index) in seekers"
+            :key="index"
+            class="partner-item"
+          >
+            <div class="partner-info">
+              <span class="partner-name">{{ seeker.username }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Empty State -->
-      <div v-else class="empty-state">
+      <div
+        v-if="partners.length === 0 && seekers.length === 0"
+        class="empty-state"
+      >
         <p>No accountability partners added yet.</p>
         <p>Add partners above to get started!</p>
       </div>
@@ -143,6 +162,7 @@ export default {
     return {
       currentPartner: "",
       partners: [],
+      seekers: [],
       isLoading: false,
       errorMessage: "",
       successMessage: "",
@@ -156,6 +176,7 @@ export default {
   },
   async mounted() {
     await this.loadPartners();
+    await this.loadSeekers();
   },
   methods: {
     async loadPartners() {
@@ -170,8 +191,11 @@ export default {
           currentUser
         );
 
-        // Transform the partnerships data to match our local structure
-        this.partners = partnerships.map((partnership) => ({
+        // Only include partnerships the current user initiated
+        const initiated = partnerships.filter((p) => p.user === currentUser);
+
+        // Transform to local structure
+        this.partners = initiated.map((partnership) => ({
           username: partnership.partner,
           reportFrequency: partnership.reportFrequency,
           notifyTypes: partnership.notifyTypes,
@@ -182,6 +206,35 @@ export default {
         console.error("Failed to load partners:", error);
         this.errorMessage =
           error.message || "Failed to load accountability partners.";
+      }
+    },
+
+    async loadSeekers() {
+      try {
+        const currentUser = authStore.getUsername();
+        if (!currentUser) {
+          return;
+        }
+
+        const seekersRaw = await accountabilityAPI.getSeekersForUser(
+          currentUser
+        );
+        const seekerIds = Array.isArray(seekersRaw) ? seekersRaw : [];
+
+        const seekersWithUsernames = await Promise.all(
+          seekerIds.map(async (id) => {
+            try {
+              const username = await passwordAuthAPI.getUsername(id);
+              return { user: id, username: username || id };
+            } catch (e) {
+              return { user: id, username: id };
+            }
+          })
+        );
+
+        this.seekers = seekersWithUsernames;
+      } catch (error) {
+        console.error("Failed to load accountability seekers:", error);
       }
     },
 

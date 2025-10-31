@@ -9,6 +9,8 @@ import SleepReport from "./views/SleepReport.vue";
 import CompetitionCreate from "./views/CompetitionCreate.vue";
 import Competition from "./views/Competition.vue";
 import Accountability from "./views/Accountability.vue";
+import Analytics from "./views/Analytics.vue";
+import ReportsInbox from "./views/ReportsInbox.vue";
 import "./style.css";
 import authStore from "./stores/authStore";
 
@@ -23,9 +25,15 @@ const routes = [
     name: "CompetitionCreate",
     component: CompetitionCreate,
   },
-      { path: "/competition", name: "Competition", component: Competition },
-      { path: "/accountability", name: "Accountability", component: Accountability },
-    ];
+  { path: "/competition", name: "Competition", component: Competition },
+  {
+    path: "/accountability",
+    name: "Accountability",
+    component: Accountability,
+  },
+  { path: "/reports-inbox", name: "ReportsInbox", component: ReportsInbox },
+  { path: "/analytics", name: "Analytics", component: Analytics },
+];
 
 const router = createRouter({
   history: createWebHistory(),

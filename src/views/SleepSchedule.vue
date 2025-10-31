@@ -256,10 +256,15 @@ export default {
           const bedtime = this.schedule[day].bedtime;
           const wakeup = this.schedule[day].wakeup;
 
+          console.log(`${day}: bedtime="${bedtime}", wakeup="${wakeup}"`);
+
           if (bedtime && wakeup) {
+            console.log(`Processing ${day}...`);
             // Calculate the actual date for this day of the week
             const date = new Date(startOfWeek);
             date.setDate(startOfWeek.getDate() + i);
+            // Set time to midnight for consistent date handling
+            date.setHours(0, 0, 0, 0);
             const dateStr = date.toLocaleDateString("en-CA"); // YYYY-MM-DD format
 
             // Bedtime logic:
@@ -271,32 +276,35 @@ export default {
               // AM bedtime is next day
               const bedDate = new Date(date);
               bedDate.setDate(date.getDate() + 1);
+              bedDate.setHours(0, 0, 0, 0);
               bedDateStr = bedDate.toLocaleDateString("en-CA"); // YYYY-MM-DD format in local time
             }
             const bedTimeStr = `${bedDateStr}T${bedtime}`;
 
             // Wake-up time logic:
-            // If wake-up time > bedtime time → same day
-            // If wake-up time < bedtime time → next day
+            // Always calculate relative to bedtime date
+            // If wake-up time < bedtime time → next day after bedtime date
+            // Otherwise → same day as bedtime date
             const bedtimeMinutes = this.timeToMinutes(bedtime);
             const wakeupMinutes = this.timeToMinutes(wakeup);
 
+            // Start with the bedtime date
             let wakeDateStr = bedDateStr;
+
             if (wakeupMinutes < bedtimeMinutes) {
-              // Wake-up is next day after bedtime
-              const wakeDate = new Date(bedDateStr);
-              wakeDate.setDate(new Date(bedDateStr).getDate() + 1);
-              wakeDateStr = wakeDate.toLocaleDateString("en-CA"); // YYYY-MM-DD format in local time
+              // Wake-up is next day after bedtime date
+              // Parse bedDateStr as local date
+              const bedDateParts = bedDateStr.split("-");
+              const bedDate = new Date(
+                parseInt(bedDateParts[0]),
+                parseInt(bedDateParts[1]) - 1,
+                parseInt(bedDateParts[2])
+              );
+              bedDate.setDate(bedDate.getDate() + 1);
+              wakeDateStr = bedDate.toLocaleDateString("en-CA"); // YYYY-MM-DD format
             }
 
             const wakeTimeStr = `${wakeDateStr}T${wakeup}`;
-
-            try {
-              // Remove existing slot if it exists
-              await sleepScheduleAPI.removeSleepSlot(userId, dateStr);
-            } catch (error) {
-              // Ignore errors when removing (slot might not exist)
-            }
 
             // Add new slot - extract tolerance from schedule
             const toleranceMins = parseInt(this.schedule[day].tolerance) || 10;
@@ -307,13 +315,31 @@ export default {
             console.log(`  Date: ${dateStr}`);
             console.log(`  Tolerance: ${toleranceMins} minutes`);
 
-            await sleepScheduleAPI.addSleepSlot(
-              userId,
-              bedTimeStr,
-              wakeTimeStr,
-              dateStr,
-              toleranceMins
-            );
+            // Backend addSleepSlot expects dateStr in YYYY-MM-DD format
+            // parseDateString will normalize it to start of day in local time
+            console.log(`  dateStr for addSleepSlot: ${dateStr}`);
+
+            try {
+              // Remove existing slot if it exists using the same format
+              await sleepScheduleAPI.removeSleepSlot(userId, dateStr);
+            } catch (error) {
+              // Ignore errors when removing (slot might not exist)
+            }
+
+            try {
+              const result = await sleepScheduleAPI.addSleepSlot(
+                userId,
+                bedTimeStr,
+                wakeTimeStr,
+                dateStr,
+                toleranceMins
+              );
+              console.log(`  Successfully added sleep slot for ${day}`);
+            } catch (slotError) {
+              console.error(`  Error adding sleep slot for ${day}:`, slotError);
+              // Continue processing other days even if one fails
+              this.errorMessage = `Failed to save schedule for ${day}. Please try again.`;
+            }
           }
         }
 
@@ -367,6 +393,8 @@ export default {
 
       const startOfWeek = new Date(date);
       startOfWeek.setDate(date.getDate() - daysToSubtract);
+      // Set time to midnight to ensure consistent date comparison
+      startOfWeek.setHours(0, 0, 0, 0);
 
       return startOfWeek;
     },

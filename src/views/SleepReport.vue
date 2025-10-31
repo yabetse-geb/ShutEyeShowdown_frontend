@@ -181,7 +181,7 @@ export default {
         }
 
         // Use the selected night date for dateStr and actual date/time for reportedTimeStr
-        const dateStr = this.formData.nightDate + "T00:00:00"; // Convert YYYY-MM-DD to local ISO format for backend
+        const dateStr = this.formData.nightDate; // YYYY-MM-DD format - the night being reported
         const reportedTimeStr = `${this.formData.actualDate}T${this.formData.actualTime}`; // Actual sleep event time in YYYY-MM-DDTHH:MM format
 
         let result;
@@ -206,7 +206,7 @@ export default {
           success = result.wakeUpSuccess;
         }
 
-        // Call recordStat to update competition scores
+        // Call recordStat to update competition scores using username (competitions store usernames)
         try {
           await competitionManagerAPI.recordStat(
             username,
@@ -241,6 +241,13 @@ export default {
               accountabilityError.message
             );
           }
+        }
+
+        // Always attempt to update reports for the user and date
+        try {
+          await accountabilityAPI.updateReports(username, dateStr);
+        } catch (updateError) {
+          console.warn("Failed to update reports:", updateError.message);
         }
 
         // Show success message with result
