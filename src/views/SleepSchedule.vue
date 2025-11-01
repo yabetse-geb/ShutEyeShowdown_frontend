@@ -7,18 +7,6 @@
         <div class="week-info">
           <p><strong>Current Week:</strong> {{ getCurrentWeekRange() }}</p>
         </div>
-        <div class="schedule-info">
-          <p>
-            <strong>Note:</strong> PM bedtime is for the current day, AM bedtime
-            is for the next day. Wake-up time will automatically be set for the
-            next day if it's earlier than bedtime (e.g., 11 PM bedtime, 7 AM
-            wake-up = Monday night to Tuesday morning).
-          </p>
-          <p class="tolerance-note">
-            <strong>Tolerance Options:</strong> Choose Strict (5 min),
-            Recommended (10 min), or Flexible (30 min) for each day.
-          </p>
-        </div>
       </div>
 
       <form @submit.prevent="handleSubmit" class="schedule-form">
@@ -409,16 +397,20 @@ export default {
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: transparent;
 }
 
 .sleep-schedule-card {
-  background: white;
+  background: rgba(30, 42, 71, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   padding: 2.5rem;
   width: 100%;
   max-width: 800px;
+  color: #e6eaf8;
 }
 
 .schedule-header {
@@ -428,19 +420,26 @@ export default {
 
 .schedule-header h2 {
   font-size: 1.8rem;
-  font-weight: 700;
-  color: #333;
+  font-weight: 500;
+  color: #e6eaf8;
   margin-bottom: 0.5rem;
+  letter-spacing: 0.02em;
+  font-family: "Nunito", "Poppins", "Inter", sans-serif;
 }
 
 .schedule-header p {
-  color: #666;
-  font-size: 0.95rem;
+  color: rgba(230, 234, 248, 0.8);
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  font-family: "Nunito", "Poppins", "Inter", sans-serif;
 }
 
 .week-info {
-  background-color: #e3f2fd;
-  border: 1px solid #bbdefb;
+  background: rgba(30, 42, 71, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 6px;
   padding: 0.75rem;
   margin-top: 1rem;
@@ -449,13 +448,15 @@ export default {
 .week-info p {
   margin: 0;
   font-size: 0.9rem;
-  color: #1976d2;
+  color: #9bb8ff;
   line-height: 1.4;
 }
 
 .schedule-info {
-  background-color: #f8f9fa;
-  border: 1px solid #e9ecef;
+  background: rgba(30, 42, 71, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 6px;
   padding: 1rem;
   margin-top: 1rem;
@@ -464,7 +465,7 @@ export default {
 .schedule-info p {
   margin: 0;
   font-size: 0.9rem;
-  color: #555;
+  color: #e6eaf8;
   line-height: 1.4;
 }
 
@@ -474,7 +475,7 @@ export default {
 
 .tolerance-note {
   font-size: 0.85rem !important;
-  color: #666 !important;
+  color: rgba(230, 234, 248, 0.7) !important;
   font-style: italic;
 }
 
@@ -495,9 +496,17 @@ export default {
   gap: 1rem;
   align-items: start;
   padding: 1rem;
-  background: #f8f9fa;
+  background: rgba(30, 42, 71, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-radius: 8px;
-  border: 1px solid #e9ecef;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s ease;
+}
+
+.day-row:hover {
+  background: rgba(45, 59, 104, 0.7);
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 .day-label {
@@ -507,7 +516,7 @@ export default {
 
 .day-name {
   font-weight: 600;
-  color: #333;
+  color: #e6eaf8;
   font-size: 1rem;
 }
 
@@ -525,6 +534,11 @@ select.time-input {
   cursor: pointer;
 }
 
+select.time-input option {
+  background: #1e2a47;
+  color: #e6eaf8;
+}
+
 .time-input-group {
   display: flex;
   flex-direction: column;
@@ -533,28 +547,44 @@ select.time-input {
 .time-label {
   font-size: 0.85rem;
   font-weight: 500;
-  color: #555;
+  color: rgba(230, 234, 248, 0.8);
   margin-bottom: 0.25rem;
 }
 
 .time-input {
   padding: 0.5rem;
-  border: 2px solid #e1e5e9;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 6px;
   font-size: 0.9rem;
-  transition: all 0.3s ease;
-  background-color: white;
+  transition: all 0.4s ease;
+  background: rgba(30, 42, 71, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #e6eaf8;
+}
+
+.time-input::placeholder {
+  color: rgba(230, 234, 248, 0.5);
+}
+
+.time-input:hover {
+  border-color: rgba(167, 139, 250, 0.3);
+  background: rgba(30, 42, 71, 0.7);
 }
 
 .time-input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: rgba(167, 139, 250, 0.5);
+  background: rgba(30, 42, 71, 0.8);
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.15),
+    0 0 8px rgba(167, 139, 250, 0.3);
 }
 
 .time-input.error {
   border-color: #e74c3c;
-  background-color: #fdf2f2;
+  background: rgba(253, 242, 242, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .error-message {
@@ -597,18 +627,22 @@ select.time-input {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(90deg, #5b5fe9, #a78bfa);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
   position: relative;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(90deg, #a78bfa, #5b5fe9);
+  box-shadow: 0 4px 16px rgba(167, 139, 250, 0.5),
+    0 0 10px rgba(167, 139, 250, 0.4);
+  transform: translateY(-2px) scale(1.02);
+  transition: all 0.4s ease;
 }
 
 .btn-primary:disabled {

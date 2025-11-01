@@ -150,11 +150,10 @@ export default {
 }
 
 .hero {
-  background: #fafbfc;
-  color: #1a202c;
+  background: transparent;
+  color: #f8f9fc;
   padding: 3rem 2rem;
   text-align: center;
-  border-bottom: 1px solid #e2e8f0;
 }
 
 .hero-content {
@@ -163,18 +162,23 @@ export default {
 }
 
 .hero-title {
-  font-size: 2.25rem;
-  font-weight: 600;
+  font-size: 2.2rem;
+  font-weight: 500;
   margin-bottom: 0.75rem;
   line-height: 1.3;
-  color: #2d3748;
+  color: #f8f9fc;
+  text-shadow: 0 2px 8px rgba(13, 27, 42, 0.3);
+  letter-spacing: 0.02em;
+  font-family: "Nunito", "Poppins", "Inter", sans-serif;
 }
 
 .hero-subtitle {
-  font-size: 1.1rem;
+  font-size: 1rem;
   margin-bottom: 2rem;
-  color: #718096;
+  color: #e0e7ff;
   font-weight: 400;
+  letter-spacing: 0.02em;
+  font-family: "Nunito", "Poppins", "Inter", sans-serif;
 }
 
 .hero-buttons {
@@ -191,47 +195,68 @@ export default {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.25);
+  background: linear-gradient(90deg, #5b5fe9, #a78bfa);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(91, 95, 233, 0.3);
+  border-radius: 12px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary:hover {
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35);
-  transform: translateY(-1px);
+  background: linear-gradient(90deg, #a78bfa, #5b5fe9);
+  box-shadow: 0 4px 16px rgba(167, 139, 250, 0.5),
+    0 0 10px rgba(167, 139, 250, 0.4);
+  transform: translateY(-2px) scale(1.02);
+  transition: all 0.4s ease;
 }
 
 .btn-secondary {
-  background-color: transparent;
-  color: #667eea;
-  border: 1.5px solid #667eea;
+  background-color: #e5e7eb;
+  color: #0d1b2a;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
 }
 
 .btn-secondary:hover {
-  background-color: #f7fafc;
-  border-color: #764ba2;
+  background-color: #9bb8ff;
+  border-color: #9bb8ff;
+  color: #0d1b2a;
+  box-shadow: 0 0 10px rgba(155, 184, 255, 0.4);
+  transition: all 0.4s ease;
 }
 
 .today-section {
   padding: 3rem 2rem;
-  background: #ffffff;
+  background: transparent;
 }
 
 .today-card {
   max-width: 560px;
   margin: 0 auto;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: rgba(30, 42, 71, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   padding: 2rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  transition: all 0.4s ease;
+  color: #e6eaf8;
+}
+
+.today-card:hover {
+  background: rgba(45, 59, 104, 0.9);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 .section-title-small {
-  font-size: 1.35rem;
-  font-weight: 600;
+  font-size: 1.5rem;
+  font-weight: 500;
   margin-bottom: 1.5rem;
-  color: #2d3748;
+  color: #f8f9fc;
+  letter-spacing: 0.02em;
+  font-family: "Nunito", "Poppins", "Inter", sans-serif;
 }
 
 .today-grid {
@@ -242,15 +267,24 @@ export default {
 }
 
 .today-item {
-  background: #f7fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  background: rgba(30, 42, 71, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
   padding: 1.25rem;
+  transition: all 0.4s ease;
+}
+
+.today-item:hover {
+  background: rgba(45, 59, 104, 0.75);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 .today-label {
   font-size: 0.8rem;
-  color: #718096;
+  color: #a78bfa;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -259,8 +293,8 @@ export default {
 
 .today-value {
   font-size: 1.4rem;
-  font-weight: 600;
-  color: #2d3748;
+  font-weight: 500;
+  color: #e6eaf8;
 }
 
 .today-actions {

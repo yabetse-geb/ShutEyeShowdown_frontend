@@ -159,16 +159,20 @@ export default {
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: transparent;
 }
 
 .inbox-card {
-  background: white;
+  background: rgba(30, 42, 71, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   padding: 2.5rem;
   width: 100%;
   max-width: 720px;
+  color: #e6eaf8;
 }
 
 .inbox-header {
@@ -186,10 +190,12 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f7fafc;
-  color: #2d3748;
+  background: rgba(30, 42, 71, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #e6eaf8;
   padding: 0.75rem 1rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   cursor: pointer;
 }
@@ -208,8 +214,10 @@ export default {
   top: calc(100% + 6px);
   left: 0;
   right: 0;
-  background: white;
-  border: 1px solid #e2e8f0;
+  background: rgba(30, 42, 71, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   max-height: 280px;
@@ -229,10 +237,12 @@ export default {
 
 /* Inbox list (Gmail-like) */
 .inbox-list {
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   overflow: hidden;
-  background: white;
+  background: rgba(30, 42, 71, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .inbox-row {
@@ -241,29 +251,33 @@ export default {
   gap: 1rem;
   align-items: center;
   padding: 0.9rem 1rem;
-  border-bottom: 1px solid #edf2f7;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   cursor: pointer;
+  color: #e6eaf8;
+  transition: all 0.2s ease;
 }
 
 .inbox-row:hover {
-  background: #f7fafc;
+  background: rgba(45, 59, 104, 0.6);
 }
 
 .inbox-header-row {
-  background: #f1f5f9;
+  background: rgba(30, 42, 71, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   font-weight: 600;
-  color: #4a5568;
+  color: #e6eaf8;
   cursor: default;
 }
 
 .inbox-col.from {
-  color: #2d3748;
+  color: #e6eaf8;
   font-size: 0.975rem;
 }
 
 .dropdown-empty {
   padding: 0.75rem 1rem;
-  color: #718096;
+  color: rgba(230, 234, 248, 0.6);
   font-style: italic;
 }
 
@@ -291,12 +305,17 @@ export default {
 }
 
 .modal-content {
-  background: white;
+  background: rgba(30, 42, 71, 0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   width: 90%;
   max-width: 720px;
   max-height: 90vh;
   overflow-y: auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  color: #e6eaf8;
 }
 
 .modal-header {
@@ -304,7 +323,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .modal-close {
@@ -324,30 +343,35 @@ export default {
   justify-content: flex-end;
   gap: 0.75rem;
   padding: 1rem 1.5rem;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .modal-loading {
-  color: #4a5568;
+  color: #e6eaf8;
 }
 
 .empty-reports {
-  color: #718096;
+  color: rgba(230, 234, 248, 0.6);
   font-style: italic;
 }
 
 /* Reports table */
 .reports-table {
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   overflow: hidden;
+  background: rgba(30, 42, 71, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .reports-header {
   display: grid;
   grid-template-columns: 1fr;
-  background: #f1f5f9;
-  color: #4a5568;
+  background: rgba(30, 42, 71, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #e6eaf8;
   font-weight: 600;
   padding: 0.75rem 1rem;
 }
@@ -356,15 +380,18 @@ export default {
   display: grid;
   grid-template-columns: 1fr;
   padding: 0.9rem 1rem;
-  background: white;
+  background: rgba(30, 42, 71, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #e6eaf8;
 }
 
 .reports-row + .reports-row {
-  border-top: 1px solid #edf2f7;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .reports-col {
-  color: #2d3748;
+  color: #e6eaf8;
   white-space: pre-wrap;
 }
 

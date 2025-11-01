@@ -235,16 +235,20 @@ export default {
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: transparent;
 }
 
 .auth-card {
-  background: white;
+  background: rgba(30, 42, 71, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   padding: 2.5rem;
   width: 100%;
   max-width: 400px;
+  color: #e6eaf8;
 }
 
 .auth-header {
@@ -254,14 +258,19 @@ export default {
 
 .auth-header h2 {
   font-size: 1.8rem;
-  font-weight: 700;
-  color: #333;
+  font-weight: 500;
+  color: #e6eaf8;
   margin-bottom: 0.5rem;
+  letter-spacing: 0.02em;
+  font-family: "Nunito", "Poppins", "Inter", sans-serif;
 }
 
 .auth-header p {
-  color: #666;
-  font-size: 0.95rem;
+  color: rgba(230, 234, 248, 0.8);
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  font-family: "Nunito", "Poppins", "Inter", sans-serif;
 }
 
 .auth-form {
@@ -276,45 +285,64 @@ export default {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
-  color: #333;
+  color: #e6eaf8;
   font-size: 0.9rem;
+  font-family: "Nunito", "Poppins", "Inter", sans-serif;
 }
 
 .form-input {
   width: 100%;
   padding: 0.75rem;
-  border: 2px solid #e1e5e9;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   font-size: 1rem;
-  transition: all 0.3s ease;
-  background-color: #fafbfc;
+  transition: all 0.4s ease;
+  background: rgba(30, 42, 71, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #e6eaf8;
+  font-family: "Nunito", "Poppins", "Inter", sans-serif;
+}
+
+.form-input::placeholder {
+  color: rgba(230, 234, 248, 0.5);
+}
+
+.form-input:hover {
+  border-color: rgba(167, 139, 250, 0.3);
+  background: rgba(30, 42, 71, 0.7);
 }
 
 .form-input:focus {
   outline: none;
-  border-color: #667eea;
-  background-color: white;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: rgba(167, 139, 250, 0.5);
+  background: rgba(30, 42, 71, 0.8);
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.15),
+    0 0 8px rgba(167, 139, 250, 0.3);
 }
 
 .form-input.error {
-  border-color: #e74c3c;
-  background-color: #fdf2f2;
+  border-color: #fc8181;
+  background: rgba(252, 129, 129, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .error-message {
   display: block;
-  color: #e74c3c;
+  color: #fc8181;
   font-size: 0.8rem;
   margin-top: 0.25rem;
+  font-family: "Nunito", "Poppins", "Inter", sans-serif;
 }
 
 .checking-message {
   display: block;
-  color: #667eea;
+  color: #9bb8ff;
   font-size: 0.8rem;
   margin-top: 0.25rem;
   font-style: italic;
+  font-family: "Nunito", "Poppins", "Inter", sans-serif;
 }
 
 .btn-full {
@@ -326,18 +354,23 @@ export default {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(90deg, #5b5fe9, #a78bfa);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
   position: relative;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(90deg, #a78bfa, #5b5fe9);
+  box-shadow: 0 4px 16px rgba(167, 139, 250, 0.5),
+    0 0 10px rgba(167, 139, 250, 0.4);
+  transform: translateY(-2px) scale(1.02);
+  transition: all 0.4s ease;
+  border-radius: 12px;
 }
 
 .btn-primary:disabled {
@@ -367,34 +400,40 @@ export default {
 }
 
 .error-banner {
-  background-color: #fdf2f2;
-  border: 1px solid #fecaca;
-  color: #dc2626;
+  background: rgba(252, 129, 129, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(252, 129, 129, 0.4);
+  color: #fc8181;
   padding: 0.75rem;
   border-radius: 6px;
   font-size: 0.9rem;
   text-align: center;
+  font-family: "Nunito", "Poppins", "Inter", sans-serif;
 }
 
 .auth-footer {
   text-align: center;
   padding-top: 1rem;
-  border-top: 1px solid #e1e5e9;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .auth-footer p {
-  color: #666;
+  color: rgba(230, 234, 248, 0.8);
   font-size: 0.9rem;
   margin: 0;
+  font-family: "Nunito", "Poppins", "Inter", sans-serif;
 }
 
 .auth-link {
-  color: #667eea;
+  color: #9bb8ff;
   text-decoration: none;
   font-weight: 500;
+  transition: color 0.3s ease;
 }
 
 .auth-link:hover {
+  color: #a78bfa;
   text-decoration: underline;
 }
 

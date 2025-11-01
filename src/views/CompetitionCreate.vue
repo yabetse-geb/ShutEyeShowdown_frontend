@@ -320,16 +320,20 @@ export default {
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: transparent;
 }
 
 .competition-create-card {
-  background: white;
+  background: rgba(30, 42, 71, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   padding: 2.5rem;
   width: 100%;
   max-width: 600px;
+  color: #e6eaf8;
 }
 
 .create-header {
@@ -339,14 +343,19 @@ export default {
 
 .create-header h2 {
   font-size: 1.8rem;
-  font-weight: 700;
-  color: #333;
+  font-weight: 500;
+  color: #e6eaf8;
   margin-bottom: 0.5rem;
+  letter-spacing: 0.02em;
+  font-family: "Nunito", "Poppins", "Inter", sans-serif;
 }
 
 .create-header p {
-  color: #666;
-  font-size: 0.95rem;
+  color: rgba(230, 234, 248, 0.8);
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  font-family: "Nunito", "Poppins", "Inter", sans-serif;
 }
 
 .create-form {
@@ -361,24 +370,39 @@ export default {
   display: block;
   font-size: 0.9rem;
   font-weight: 600;
-  color: #333;
+  color: #e6eaf8;
   margin-bottom: 0.5rem;
 }
 
 .form-input {
   width: 100%;
   padding: 0.75rem;
-  border: 2px solid #e1e5e9;
-  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
   font-size: 1rem;
-  transition: all 0.3s ease;
-  background-color: white;
+  transition: all 0.4s ease;
+  background: rgba(30, 42, 71, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #e6eaf8;
+}
+
+.form-input::placeholder {
+  color: rgba(230, 234, 248, 0.5);
+}
+
+.form-input:hover {
+  border-color: rgba(167, 139, 250, 0.3);
+  box-shadow: 0 0 8px rgba(167, 139, 250, 0.2);
+  background: rgba(30, 42, 71, 0.7);
 }
 
 .form-input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: rgba(167, 139, 250, 0.5);
+  background: rgba(30, 42, 71, 0.8);
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.15),
+    0 0 12px rgba(167, 139, 250, 0.3);
 }
 
 .form-input.error {
@@ -410,16 +434,18 @@ export default {
 .participants-list {
   margin-top: 1.5rem;
   padding: 1rem;
-  background-color: #f8f9fa;
+  background: rgba(30, 42, 71, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-radius: 8px;
-  border: 1px solid #e9ecef;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .participants-list h3 {
   margin: 0 0 1rem 0;
   font-size: 1rem;
   font-weight: 600;
-  color: #333;
+  color: #e6eaf8;
 }
 
 .participants-grid {
@@ -431,8 +457,10 @@ export default {
 .participant-item {
   display: flex;
   align-items: center;
-  background-color: white;
-  border: 1px solid #e1e5e9;
+  background: rgba(30, 42, 71, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 6px;
   padding: 0.5rem 0.75rem;
   font-size: 0.9rem;
@@ -440,7 +468,7 @@ export default {
 
 .participant-name {
   margin-right: 0.5rem;
-  color: #333;
+  color: #e6eaf8;
 }
 
 .btn-remove {
@@ -508,18 +536,23 @@ export default {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(90deg, #5b5fe9, #a78bfa);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
   position: relative;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(90deg, #a78bfa, #5b5fe9);
+  box-shadow: 0 4px 16px rgba(167, 139, 250, 0.5),
+    0 0 10px rgba(167, 139, 250, 0.4);
+  transform: translateY(-2px) scale(1.02);
+  transition: all 0.4s ease;
+  border-radius: 12px;
 }
 
 .btn-primary:disabled {

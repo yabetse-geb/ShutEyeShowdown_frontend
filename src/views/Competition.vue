@@ -25,8 +25,8 @@
               :key="competition.id"
               :value="competition.id"
             >
-              {{ competition.name }} ({{ competition.startDate }} -
-              {{ competition.endDate }})
+              {{ competition.name }} ({{ formatDate(competition.startDate) }} -
+              {{ formatDate(competition.endDate) }})
             </option>
           </select>
         </div>
@@ -460,6 +460,18 @@ export default {
                   `Error getting report counts for ${entry.userId}:`,
                   error
                 );
+                // Handle timeout errors gracefully - show ?/? instead of 0/0
+                if (
+                  error.code === "ECONNABORTED" ||
+                  error.message?.includes("timeout")
+                ) {
+                  console.warn(`Timeout fetching reports for ${entry.userId}`);
+                  return {
+                    ...entry,
+                    bedtimeReports: "?/?",
+                    wakeupReports: "?/?",
+                  };
+                }
                 return {
                   ...entry,
                   bedtimeReports: "0/0",
@@ -470,7 +482,17 @@ export default {
           );
         }
       } catch (error) {
-        this.errorMessage = error.message;
+        // Handle timeout errors with a user-friendly message
+        if (
+          error.code === "ECONNABORTED" ||
+          error.message?.includes("timeout")
+        ) {
+          this.errorMessage =
+            "Request timed out. The competition may have many participants. Please try again or contact support.";
+          console.error("Competition page timeout:", error);
+        } else {
+          this.errorMessage = error.message;
+        }
       } finally {
         this.isLoading = false;
       }
@@ -510,20 +532,19 @@ export default {
     },
 
     formatDate(dateObj) {
-      // dateObj is an ISO 8601 string in UTC (e.g., "2024-10-29T00:00:00.000Z")
-      // Extract UTC components and display as local date to avoid timezone issues
+      // The backend's parseDateString creates a UTC date: "2025-10-27" -> "2025-10-27T00:00:00.000Z"
+      // MongoDB stores this UTC timestamp. When we parse it and display in EDT, it shows the previous day!
+      // Solution: Extract the UTC date components to get back the original date
       const date = new Date(dateObj);
-      const utcYear = date.getUTCFullYear();
-      const utcMonth = date.getUTCMonth();
-      const utcDay = date.getUTCDate();
-
-      // Create a new Date object in local timezone using the UTC date components
-      const localDate = new Date(utcYear, utcMonth, utcDay);
+      const year = date.getUTCFullYear();
+      const month = date.getUTCMonth();
+      const day = date.getUTCDate();
+      const localDate = new Date(year, month, day);
 
       return localDate.toLocaleDateString("en-US", {
         year: "numeric",
-        month: "long",
-        day: "numeric",
+        month: "2-digit",
+        day: "2-digit",
       });
     },
 
@@ -543,10 +564,14 @@ export default {
 }
 
 .competition-card {
-  background: white;
+  background: rgba(30, 42, 71, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   padding: 30px;
+  color: #e6eaf8;
 }
 
 .competition-header {
@@ -555,8 +580,13 @@ export default {
 }
 
 .competition-header h2 {
-  color: #2c3e50;
+  color: #f8f9fc;
   margin-bottom: 10px;
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  font-family: "Nunito", "Poppins", "Inter", sans-serif;
 }
 
 .competition-selection {
@@ -571,29 +601,47 @@ export default {
   display: block;
   margin-bottom: 8px;
   font-weight: 600;
-  color: #2c3e50;
+  color: #f8f9fc;
 }
 
 .form-select {
   width: 100%;
   padding: 12px;
-  border: 2px solid #e1e8ed;
-  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
   font-size: 16px;
-  background-color: white;
-  transition: border-color 0.3s ease;
+  background: rgba(30, 42, 71, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #e6eaf8;
+  transition: all 0.4s ease;
+}
+
+.form-select option {
+  background: #1e2a47;
+  color: #e6eaf8;
+}
+
+.form-select:hover {
+  border-color: rgba(167, 139, 250, 0.3);
+  box-shadow: 0 0 8px rgba(167, 139, 250, 0.2);
+  background: rgba(30, 42, 71, 0.7);
 }
 
 .form-select:focus {
   outline: none;
-  border-color: #3498db;
+  border-color: rgba(167, 139, 250, 0.5);
+  background: rgba(30, 42, 71, 0.8);
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.15),
+    0 0 12px rgba(167, 139, 250, 0.3);
 }
 
 .trophy-header {
   text-align: center;
   margin-bottom: 30px;
   padding: 20px;
-  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  background: rgba(224, 231, 255, 0.3);
+  border: 1px solid #d6bcfa;
   border-radius: 12px;
 }
 
@@ -603,10 +651,14 @@ export default {
 }
 
 .competition-title {
-  font-size: 2.5rem;
-  color: #2c3e50;
+  font-size: 2rem;
+  color: #a78bfa;
   margin: 0;
-  font-weight: 700;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.04em;
+  text-shadow: 0 2px 4px rgba(167, 139, 250, 0.3);
+  font-family: "Nunito", "Poppins", "Inter", sans-serif;
 }
 
 .competition-info {
@@ -620,17 +672,20 @@ export default {
   display: flex;
   justify-content: space-between;
   padding: 15px;
-  background: #f8f9fa;
+  background: rgba(30, 42, 71, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
 }
 
 .info-label {
   font-weight: 600;
-  color: #6c757d;
+  color: rgba(230, 234, 248, 0.7);
 }
 
 .info-value {
-  color: #2c3e50;
+  color: #e6eaf8;
 }
 
 .status-active {
@@ -648,9 +703,13 @@ export default {
 }
 
 .leaderboard-section h3 {
-  color: #2c3e50;
+  color: #a78bfa;
   margin-bottom: 20px;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  font-family: "Nunito", "Poppins", "Inter", sans-serif;
 }
 
 .leaderboard-table {
@@ -662,22 +721,29 @@ export default {
 .table-header {
   display: grid;
   grid-template-columns: 80px 1fr 100px 100px 100px;
-  background: #3498db;
+  background: linear-gradient(90deg, #5b5fe9, #a78bfa);
   color: white;
-  font-weight: 600;
+  font-weight: 700;
   padding: 15px;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  font-family: "Nunito", "Poppins", "Inter", sans-serif;
 }
 
 .table-row {
   display: grid;
   grid-template-columns: 80px 1fr 100px 100px 100px;
   padding: 15px;
-  border-bottom: 1px solid #e1e8ed;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   transition: background-color 0.3s ease;
+  background: rgba(30, 42, 71, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #e6eaf8;
 }
 
 .table-row:hover {
-  background-color: #f8f9fa;
+  background-color: rgba(45, 59, 104, 0.7);
 }
 
 .table-row:last-child {
@@ -685,15 +751,42 @@ export default {
 }
 
 .first-place {
-  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  background: linear-gradient(135deg, #d4af37, #c9a529);
+  color: #0d1b2a !important;
+}
+
+.first-place .col-username,
+.first-place .col-score,
+.first-place .col-report,
+.first-place .col-position {
+  color: #0d1b2a;
+  font-weight: 600;
 }
 
 .second-place {
-  background: linear-gradient(135deg, #c0c0c0, #e8e8e8);
+  background: linear-gradient(135deg, #a8a8a8, #c0c0c0);
+  color: #0d1b2a !important;
+}
+
+.second-place .col-username,
+.second-place .col-score,
+.second-place .col-report,
+.second-place .col-position {
+  color: #0d1b2a;
+  font-weight: 600;
 }
 
 .third-place {
-  background: linear-gradient(135deg, #cd7f32, #daa520);
+  background: linear-gradient(135deg, #b8860b, #cd853f);
+  color: #0d1b2a !important;
+}
+
+.third-place .col-username,
+.third-place .col-score,
+.third-place .col-report,
+.third-place .col-position {
+  color: #0d1b2a;
+  font-weight: 600;
 }
 
 .col-position {
@@ -774,9 +867,13 @@ export default {
 .no-competitions {
   text-align: center;
   padding: 60px 20px;
-  background: #f8f9fa;
+  background: rgba(30, 42, 71, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   margin: 20px 0;
+  color: #e6eaf8;
 }
 
 .no-competitions-icon {
@@ -811,12 +908,17 @@ export default {
 }
 
 .modal-content {
-  background: white;
+  background: rgba(30, 42, 71, 0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   max-width: 600px;
   width: 90%;
   max-height: 80vh;
   overflow-y: auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  color: #e6eaf8;
 }
 
 .modal-header {
@@ -824,12 +926,12 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 20px;
-  border-bottom: 1px solid #e1e8ed;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .modal-header h2 {
   margin: 0;
-  color: #2c3e50;
+  color: #e6eaf8;
 }
 
 .modal-close {
@@ -850,13 +952,19 @@ export default {
 }
 
 .winners-section h3 {
-  color: #2c3e50;
+  color: #e6eaf8;
   margin-bottom: 15px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  font-family: "Nunito", "Poppins", "Inter", sans-serif;
 }
 
 .winners-list {
   font-size: 1.2rem;
   font-weight: 600;
+  color: #e6eaf8;
 }
 
 .first-winner {
@@ -869,9 +977,13 @@ export default {
 }
 
 .rules-section h3 {
-  color: #2c3e50;
+  color: #e6eaf8;
   margin-bottom: 15px;
-  font-size: 1.3rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  font-family: "Nunito", "Poppins", "Inter", sans-serif;
 }
 
 .rules-list {
@@ -882,9 +994,14 @@ export default {
 
 .rules-list li {
   padding: 10px 0;
-  color: #34495e;
+  color: #e6eaf8;
   font-size: 1rem;
-  border-bottom: 1px solid #ecf0f1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.rules-list li strong {
+  color: #a78bfa;
+  font-weight: 600;
 }
 
 .rules-list li:last-child {
@@ -893,18 +1010,30 @@ export default {
 
 .rules-note {
   padding: 15px;
-  background: #f8f9fa;
-  border-left: 4px solid #3498db;
+  background: rgba(30, 42, 71, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-left: 4px solid #5b5fe9;
   border-radius: 4px;
-  color: #495057;
+  color: #e6eaf8;
   font-size: 0.95rem;
   margin: 20px 0 0 0;
 }
 
+.rules-note strong {
+  color: #a78bfa;
+  font-weight: 600;
+}
+
 .podium-section h3 {
-  color: #2c3e50;
+  color: #e6eaf8;
   margin-bottom: 20px;
   text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  font-family: "Nunito", "Poppins", "Inter", sans-serif;
 }
 
 .podium {
@@ -920,7 +1049,7 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: end;
-  background: linear-gradient(135deg, #3498db, #2980b9);
+  background: linear-gradient(90deg, #5b5fe9, #a78bfa);
   border-radius: 8px 8px 0 0;
   min-width: 80px;
   padding: 10px;
@@ -960,7 +1089,7 @@ export default {
 
 .modal-footer {
   padding: 20px;
-  border-top: 1px solid #e1e8ed;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   text-align: center;
 }
 
@@ -977,12 +1106,18 @@ export default {
 }
 
 .btn-primary {
-  background: #3498db;
+  background: linear-gradient(90deg, #5b5fe9, #a78bfa);
   color: white;
+  border-radius: 12px;
+  border: none;
 }
 
 .btn-primary:hover {
-  background: #2980b9;
+  background: linear-gradient(90deg, #a78bfa, #5b5fe9);
+  box-shadow: 0 4px 16px rgba(167, 139, 250, 0.5),
+    0 0 10px rgba(167, 139, 250, 0.4);
+  transform: translateY(-2px) scale(1.02);
+  transition: all 0.4s ease;
 }
 
 .btn-danger {
@@ -995,13 +1130,18 @@ export default {
 }
 
 .btn-secondary {
-  background: #95a5a6;
-  color: white;
+  background: #e5e7eb;
+  color: #0d1b2a;
   margin-right: 10px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
 }
 
 .btn-secondary:hover {
-  background: #7f8c8d;
+  background: #9bb8ff;
+  border-color: #9bb8ff;
+  box-shadow: 0 0 10px rgba(155, 184, 255, 0.4);
+  transition: all 0.4s ease;
 }
 
 .btn-large {

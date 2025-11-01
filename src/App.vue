@@ -106,13 +106,13 @@ export default {
 }
 
 .navbar {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(90deg, #0d1b2a, #5b5fe9, #a78bfa);
   color: white;
   padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(13, 27, 42, 0.3);
 }
 
 .nav-brand h1 {
@@ -139,7 +139,10 @@ export default {
 }
 
 .nav-link.router-link-active {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: #e0e7ff;
+  color: #0d1b2a;
+  border-radius: 8px;
+  font-weight: 600;
 }
 
 .nav-user {
@@ -164,13 +167,22 @@ export default {
 .main-content {
   flex: 1;
   padding: 2rem;
+  background: linear-gradient(
+    135deg,
+    #0b132b 0%,
+    #1c2541 40%,
+    #3a506b 70%,
+    #a78bfa 100%
+  );
+  background-attachment: fixed;
+  min-height: calc(100vh - 200px);
 }
 
 .footer {
-  background-color: #f8f9fa;
+  background: rgba(13, 27, 42, 0.8);
   padding: 1rem 2rem;
   text-align: center;
-  border-top: 1px solid #e9ecef;
-  color: #6c757d;
+  border-top: 1px solid rgba(167, 139, 250, 0.3);
+  color: #e0e7ff;
 }
 </style>
