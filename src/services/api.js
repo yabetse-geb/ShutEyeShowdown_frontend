@@ -49,13 +49,12 @@ apiClient.interceptors.response.use(
 // PasswordAuth API service
 export const passwordAuthAPI = {
   // Register a new user
-  async register(username, password, email) {
+  async register(username, password) {
     try {
-      console.log("Attempting registration with:", { username, email });
+      console.log("Attempting registration with:", { username });
       const response = await apiClient.post("/api/PasswordAuth/register", {
         username,
         password,
-        email,
       });
       console.log("Registration response:", response.data);
 
@@ -126,45 +125,21 @@ export const passwordAuthAPI = {
     }
   },
 
-  // Change email
-  async changeEmail(username, password, newEmail) {
-    try {
-      const response = await apiClient.post("/api/PasswordAuth/changeEmail", {
-        username,
-        password,
-        newEmail,
-      });
-      return response.data;
-    } catch (error) {
-      throw new Error(error.response?.data?.error || "Email change failed");
-    }
-  },
-
-  // Get email for username
-  async getEmail(username) {
-    try {
-      const response = await apiClient.post("/api/PasswordAuth/_getEmail", {
-        username,
-      });
-      return response.data;
-    } catch (error) {
-      throw new Error(error.response?.data?.error || "Failed to get email");
-    }
-  },
-
   // Get username for a user id
-  async getUsername(user) {
+  async getUsername(userId) {
     try {
       const response = await apiClient.post("/api/PasswordAuth/_getUsername", {
-        userId: user,
+        userId,
       });
-      if (response.data?.error) {
-        throw new Error(response.data.error);
+      // Success response is an array: [{ username: string }]
+      // Error response is an empty array: []
+      if (Array.isArray(response.data) && response.data.length > 0) {
+        return response.data[0].username;
       }
-      // Spec returns { username: string }
-      return response.data?.username;
+      return null; // User not found or error
     } catch (error) {
-      throw new Error(error.response?.data?.error || "Failed to get username");
+      // On error, return null (API spec says error response is empty array)
+      return null;
     }
   },
 
@@ -174,11 +149,16 @@ export const passwordAuthAPI = {
       const response = await apiClient.post("/api/PasswordAuth/_isRegistered", {
         username,
       });
-      return response.data;
+      // Success response: [{ isRegistered: boolean }]
+      // Error response: [] (empty array)
+      if (Array.isArray(response.data) && response.data.length > 0) {
+        return response.data;
+      }
+      // Empty array means error - return empty array
+      return [];
     } catch (error) {
-      throw new Error(
-        error.response?.data?.error || "Failed to check registration status"
-      );
+      // On error, return empty array (API spec says error response is empty array)
+      return [];
     }
   },
 
@@ -277,17 +257,17 @@ export const sleepScheduleAPI = {
         }
       );
 
-      if (response.data.error) {
-        throw new Error(response.data.error);
+      // Success response: [{ SleepSlot }] (array with value)
+      // Error response: [] (empty array)
+      if (Array.isArray(response.data)) {
+        return response.data;
       }
 
-      return response.data;
+      // If not an array, return empty array (error response format)
+      return [];
     } catch (error) {
-      throw new Error(
-        error.response?.data?.error ||
-          error.message ||
-          "Failed to get sleep slot"
-      );
+      // On error, return empty array (API spec says error response is empty array)
+      return [];
     }
   },
 
@@ -301,11 +281,14 @@ export const sleepScheduleAPI = {
         }
       );
 
+      // Success response: [{ SleepSlot }] (array)
+      // Error response: { error: string } (object)
       if (response.data.error) {
         throw new Error(response.data.error);
       }
 
-      return response.data;
+      // Return the array response (spec says Query returns array)
+      return Array.isArray(response.data) ? response.data : [];
     } catch (error) {
       throw new Error(
         error.response?.data?.error ||
@@ -460,30 +443,18 @@ export const competitionManagerAPI = {
       console.log("API: Leaderboard response:", response.data);
       console.log("API: Response status:", response.status);
 
-      if (response.data.error) {
-        throw new Error(response.data.error);
+      // Success response: [{ position, userId, totalScore }]
+      // Error response: [] (empty array)
+      if (Array.isArray(response.data)) {
+        return response.data;
       }
 
-      // Check if the response is an array
-      if (!Array.isArray(response.data)) {
-        console.warn(
-          "API: Leaderboard response is not an array:",
-          response.data
-        );
-        // If it's wrapped in another structure, try to extract it
-        if (response.data.data && Array.isArray(response.data.data)) {
-          return response.data.data;
-        }
-      }
-
-      return response.data;
+      // If not an array, return empty array (error response format)
+      return [];
     } catch (error) {
       console.error("API: Leaderboard error:", error);
-      throw new Error(
-        error.response?.data?.error ||
-          error.message ||
-          "Failed to get leaderboard"
-      );
+      // On error, return empty array (API spec says error response is empty array)
+      return [];
     }
   },
 
@@ -527,18 +498,18 @@ export const competitionManagerAPI = {
       console.log("API: Raw response:", response);
       console.log("API: Response data:", response.data);
 
-      if (response.data.error) {
-        throw new Error(response.data.error);
+      // Success response: [{ Competition objects }]
+      // Error response: [] (empty array)
+      if (Array.isArray(response.data)) {
+        return response.data;
       }
 
-      return response.data;
+      // If not an array, return empty array (error response format)
+      return [];
     } catch (error) {
       console.error("API: Error getting competitions:", error);
-      throw new Error(
-        error.response?.data?.error ||
-          error.message ||
-          "Failed to get competitions for user"
-      );
+      // On error, return empty array (API spec says error response is empty array)
+      return [];
     }
   },
 
@@ -734,11 +705,14 @@ export const accountabilityAPI = {
         }
       );
 
+      // Success response: [{ Partnership }] (array)
+      // Error response: { error: string } (object)
       if (response.data.error) {
         throw new Error(response.data.error);
       }
 
-      return response.data;
+      // Return the array response (spec says Query returns array)
+      return Array.isArray(response.data) ? response.data : [];
     } catch (error) {
       throw new Error(
         error.response?.data?.error ||
@@ -758,11 +732,14 @@ export const accountabilityAPI = {
         }
       );
 
+      // Success response: ["string"] (array of user IDs)
+      // Error response: { error: string } (object)
       if (response.data.error) {
         throw new Error(response.data.error);
       }
 
-      return response.data;
+      // Return the array response (spec says Query returns array)
+      return Array.isArray(response.data) ? response.data : [];
     } catch (error) {
       throw new Error(
         error.response?.data?.error ||

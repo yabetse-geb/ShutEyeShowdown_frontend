@@ -262,7 +262,8 @@ export default {
         const response = await passwordAuthAPI.isRegistered(
           this.currentPartner
         );
-        if (!response.isRegistered) {
+        // Response is an array: [{ isRegistered: boolean }] or [] (error)
+        if (!response || response.length === 0 || !response[0]?.isRegistered) {
           this.errorMessage = `User '${this.currentPartner}' is not registered.`;
           return;
         }

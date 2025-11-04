@@ -28,22 +28,6 @@
         </div>
 
         <div class="form-group">
-          <label for="email" class="form-label">Email</label>
-          <input
-            id="email"
-            v-model="form.email"
-            type="email"
-            class="form-input"
-            :class="{ error: errors.email }"
-            placeholder="Enter your email address"
-            required
-          />
-          <span v-if="errors.email" class="error-message">{{
-            errors.email
-          }}</span>
-        </div>
-
-        <div class="form-group">
           <label for="password" class="form-label">Password</label>
           <input
             id="password"
@@ -112,7 +96,6 @@ export default {
     return {
       form: {
         username: "",
-        email: "",
         password: "",
         confirmPassword: "",
       },
@@ -137,8 +120,7 @@ export default {
       try {
         const response = await passwordAuthAPI.register(
           this.form.username,
-          this.form.password,
-          this.form.email
+          this.form.password
         );
 
         console.log("Registration successful:", response);
@@ -172,13 +154,6 @@ export default {
         this.errors.username = "Username must be at least 3 characters";
       }
 
-      // Email validation
-      if (!this.form.email.trim()) {
-        this.errors.email = "Email is required";
-      } else if (!this.isValidEmail(this.form.email)) {
-        this.errors.email = "Please enter a valid email address";
-      }
-
       // Password validation
       if (!this.form.password) {
         this.errors.password = "Password is required";
@@ -194,11 +169,6 @@ export default {
       }
 
       return Object.keys(this.errors).length === 0;
-    },
-
-    isValidEmail(email) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailRegex.test(email);
     },
 
     async checkUsernameAvailability() {
