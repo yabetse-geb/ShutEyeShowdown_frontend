@@ -5,7 +5,28 @@
 
 [@api-extraction-from-spec](../tools/api-extraction-from-spec.md)
 
-Please extract an API spec for this updated [@PasswordAuth](PasswordAuth/PasswordAuth.md) concept and implementation, [@implementation](design/concepts/PasswordAuth/implementation.md)
+Please extract an API specs for all these concepts Accountability, CompetitionManager, PasswordAuth, Sessioning, and SleepSchedule
+
+## Accountability:
+
+Specification:
+
+[@Accountability](Accountability/Accountability.md)
+
+Code:
+
+[@Implementation](Accountability/Implementation.md)
+
+
+## CompetitionManager:
+
+Specification:
+
+[@CompetitionManager](CompetitionManager/CompetitionManager.md)
+
+Code:
+
+[@implementation](CompetitionManager/implementation.md)
 
 ## PasswordAuth
 
@@ -17,57 +38,59 @@ Code:
 
 [@implementation](PasswordAuth/implementation.md)
 
+
+## Sessioning
+
+Specification:
+
+[@Sessioning](Sessioning/Sessioning.md)
+
+Code:
+
+[@implementation](Sessioning/implementation.md)
+
+## SleepSchedule
+
+Specification:
+
+[@SleepSchedule](SleepSchedule/SleepSchedule.md)
+
+Code:
+
+[@implementation](SleepSchedule/implementation.md)
+
+
+
+
+# response:
+
+# API Specification: Accountability Concept
+
+**Purpose:** Enable structured accountability between users by recording their partnerships, adherence tracking preferences, and report frequencies. The concept maintains only the data required to support external systems in generating notifications or summaries—it does not send or deliver messages itself. By storing which types of adherence failures are monitored and when reports should be produced, the concept ensures that each partnership’s accountability data remains accurate, consistent, and ready for use by reporting or notification services.
+
+---
+
 ## API Endpoints
-
-### POST /api/Accountability/_getAccountabilitySeekersForUser
-
-**Description:** Retrieves the list of users who have designated the given mentor as their partner.
-
-**Requirements:**
-- `mentor` must be a valid user ID.
-
-**Effects:**
-- Returns the list of `user` IDs from `Partnerships` where `{ partner: mentor }`.
-
-**Request Body:**
-```json
-{
-  "mentor": "string"
-}
-```
-
-**Success Response Body (Query):**
-```json
-[
-  "string"
-]
-```
-
-**Error Response Body:**
-```json
-{
-  "error": "string"
-}
 
 ### POST /api/Accountability/addPartner
 
-**Description:** Creates a new accountability partnership between two users with specified notification settings.
+**Description:** Establishes a new accountability partnership between two users with specified notification preferences.
 
 **Requirements:**
-- The `user` and `partner` must not be the same.
-- A partnership between this `user` and `partner` must not already exist.
+- user and partner are not equal.
+- A partnership between the user and partner must not already exist.
 
 **Effects:**
-- A new `Partnership` record is created with the given `user`, `partner`, `notifyTypes`, `reportFrequency`, and a `lastReportDate` of null.
- - A new `Reports` record is created with `(user: partner, accountabilitySeeker: user, allReports: [])`.
+- Adds a new partnership record with the given user, partner, notification types, and report frequency.
+- Creates a corresponding report entry for the partner to receive reports about the user.
 
 **Request Body:**
 ```json
 {
-  "user": "string",
-  "partner": "string",
-  "notifyTypes": ["string"],
-  "reportFrequency": "string"
+  "user": "ID",
+  "partner": "ID",
+  "notifyTypes": "FailureType[]",
+  "reportFrequency": "FrequencyType"
 }
 ```
 
@@ -83,56 +106,22 @@ Code:
 }
 ```
 ---
-
-### POST /api/Accountability/_getAllReports
-
-**Description:** Retrieves the stored list of report strings for a given `(user, accountabilitySeeker)` pair.
-
-**Requirements:**
-- Both `user` and `accountabilitySeeker` must be valid user IDs.
-
-**Effects:**
-- Looks up the `Reports` document where `{ user, accountabilitySeeker }` and returns `allReports` (empty list if none).
-
-**Request Body:**
-```json
-{
-  "user": "string",
-  "accountabilitySeeker": "string"
-}
-```
-
-**Success Response Body (Query):**
-```json
-[
-  "string"
-]
-```
-
-**Error Response Body:**
-```json
-{
-  "error": "string"
-}
-```
----
-
 ### POST /api/Accountability/removePartner
 
-**Description:** Removes an existing accountability partnership.
+**Description:** Removes an existing accountability partnership between two users.
 
 **Requirements:**
-- A partnership must exist between the given `user` and `partner`.
+- A partnership must exist between the specified user and partner.
 
 **Effects:**
-- The `Partnership` record matching the `user` and `partner` is removed.
- - The corresponding `Reports` record with `(user: partner, accountabilitySeeker: user)` is removed.
+- Removes the partnership record for the user and partner.
+- Removes the associated report entry.
 
 **Request Body:**
 ```json
 {
-  "user": "string",
-  "partner": "string"
+  "user": "ID",
+  "partner": "ID"
 }
 ```
 
@@ -148,24 +137,23 @@ Code:
 }
 ```
 ---
-
 ### POST /api/Accountability/updatePreferences
 
-**Description:** Updates the notification settings for an existing partnership.
+**Description:** Updates the notification preferences for an existing partnership.
 
 **Requirements:**
-- A partnership must exist between the given `user` and `partner`.
+- A partnership must exist between the specified user and partner.
 
 **Effects:**
-- The `notifyTypes` and `reportFrequency` of the existing partnership are updated to the new values.
+- Modifies the `notifyTypes` and `reportFrequency` for the existing partnership.
 
 **Request Body:**
 ```json
 {
-  "user": "string",
-  "partner": "string",
-  "notifyTypes": ["string"],
-  "reportFrequency": "string"
+  "user": "ID",
+  "partner": "ID",
+  "notifyTypes": "FailureType[]",
+  "reportFrequency": "FrequencyType"
 }
 ```
 
@@ -181,24 +169,23 @@ Code:
 }
 ```
 ---
-
 ### POST /api/Accountability/recordFailure
 
-**Description:** Records a specific instance of an adherence failure for a user on a given date.
+**Description:** Records an instance of a user failing to adhere to their sleep schedule.
 
 **Requirements:**
-- The `date` string must be in a parsable format (e.g., YYYY-MM-DD).
+- `date` must be a string that can be parsed into a Date object.
 - The exact same failure (user, date, type) must not already be recorded.
 
 **Effects:**
-- A new `AdherenceFailure` record is created for the user with the specified date and failure type.
+- Creates a new `AdherenceFailure` record for the user on the specified date and failure type.
 
 **Request Body:**
 ```json
 {
-  "user": "string",
+  "user": "ID",
   "date": "string",
-  "failureType": "string"
+  "failureType": "SleepEventType"
 }
 ```
 
@@ -214,23 +201,22 @@ Code:
 }
 ```
 ---
-
 ### POST /api/Accountability/reportAllFailuresFromStartToEnd
 
-**Description:** Generates a summary string of all unreported adherence failures for a user within a specified date range.
+**Description:** Generates a string summary of all unreported adherence failures for a user within a specified date range.
 
 **Requirements:**
-- `startDate` and `endDate` must be valid, parsable date strings.
-- `startDate` must be on or before `endDate`.
+- `startDate` must be less than or equal to `endDate`.
+- `startDate` and `endDate` must be valid date strings.
 
 **Effects:**
-- Finds all unreported adherence failures for the user between the start and end dates.
-- Returns a string listing each failure, or a message indicating no failures were found.
+- Finds all unreported adherence failures for the user within the date range.
+- Returns a formatted string listing each failure, or a message indicating no failures were found.
 
 **Request Body:**
 ```json
 {
-  "user": "string",
+  "user": "ID",
   "startDate": "string",
   "endDate": "string"
 }
@@ -239,7 +225,7 @@ Code:
 **Success Response Body (Action):**
 ```json
 {
-  "report": "string"
+  "message": "string"
 }
 ```
 
@@ -250,26 +236,22 @@ Code:
 }
 ```
 ---
-
 ### POST /api/Accountability/updateReports
 
-**Description:** Generates failure summaries per partnership based on reporting preferences, marks included failures as reported, updates lastReportDate, and appends each summary to the corresponding Reports document.
+**Description:** Generates and appends new reports for a user's partners based on their configured frequency and recent failures.
 
 **Requirements:**
 - The user must have at least one active partnership.
 - The `date` string must be a valid, parsable date.
 
 **Effects:**
-- For each of the user's partnerships, checks if a report is due based on `reportFrequency` (Immediate/Daily/Weekly).
-- Compiles relevant unreported failures into a summary string when due.
-- Marks those failures as reported.
-- Updates the partnership's `lastReportDate`.
-- Appends the summary string to `Reports.allReports` for the document with `(user: partner, accountabilitySeeker: user)` (created if missing).
+- For each of the user's partnerships, it checks if a report should be generated based on the `reportFrequency`.
+- If a report is generated, it includes all unreported failures, marks them as reported, updates the partnership's `lastReportedDate`, and appends the report string to the partner's report log.
 
 **Request Body:**
 ```json
 {
-  "user": "string",
+  "user": "ID",
   "date": "string"
 }
 ```
@@ -286,21 +268,20 @@ Code:
 }
 ```
 ---
-
 ### POST /api/Accountability/_getPartnerships
 
-**Description:** Retrieves all partnerships associated with a user, where they are either the primary user or the partner.
+**Description:** Retrieves all accountability partnerships associated with a given user.
 
 **Requirements:**
-- (None)
+- None.
 
 **Effects:**
-- Returns an array of all `Partnership` objects where the specified user is either the `user` or the `partner`.
+- Returns all partnerships where the user is either the primary user or the partner.
 
 **Request Body:**
 ```json
 {
-  "user": "string"
+  "user": "ID"
 }
 ```
 
@@ -308,21 +289,18 @@ Code:
 ```json
 [
   {
-    "_id": "string",
-    "user": "string",
-    "partner": "string",
-    "notifyTypes": ["string"],
-    "reportFrequency": "string",
-    "lastReportDate": "string"
+    "user": "ID",
+    "partner": "ID",
+    "notifyTypes": "FailureType[]",
+    "reportFrequency": "FrequencyType",
+    "lastReportDate": "Date"
   }
 ]
 ```
 
 **Error Response Body:**
 ```json
-{
-  "error": "string"
-}
+[]
 ```
 ---
 # API Specification: CompetitionManager Concept
@@ -335,24 +313,24 @@ Code:
 
 ### POST /api/CompetitionManager/startCompetition
 
-**Description:** Creates a new named competition for a set of users with a defined start and end date.
+**Description:** Creates a new sleep-adherence competition between a set of users.
 
 **Requirements:**
 - `name` must be a non-empty string.
-- `participants` must contain at least two distinct user IDs.
+- `participants` must contain at least two distinct users.
 - `startDateStr` and `endDateStr` must be valid date strings.
-- The start date must be on or before the end date.
+- The start date must be before or the same as the end date.
 
 **Effects:**
-- A new `Competition` is created with the given name, participants, and dates, marked as active.
-- A `Score` record is created for each participant, initialized to zero.
+- Creates a new `Competition` record with the specified details and an active status.
+- Initializes a `Score` record for each participant in the new competition with scores set to zero.
 - Returns the ID of the newly created competition.
 
 **Request Body:**
 ```json
 {
   "name": "string",
-  "participants": ["string"],
+  "participants": "ID[]",
   "startDateStr": "string",
   "endDateStr": "string"
 }
@@ -361,7 +339,7 @@ Code:
 **Success Response Body (Action):**
 ```json
 {
-  "competitionId": "string"
+  "competitionId": "ID"
 }
 ```
 
@@ -372,26 +350,25 @@ Code:
 }
 ```
 ---
-
 ### POST /api/CompetitionManager/recordStat
 
-**Description:** Records a sleep adherence event (success or failure) for a user, updating their score in all relevant active competitions.
+**Description:** Records a user's performance (success or failure) for a sleep event within their active competitions.
 
 **Requirements:**
 - The user `u` must be a participant in at least one active competition.
-- The `dateStr` must be a valid date string that falls within the active competition's date range.
+- `dateStr` must be a valid date string.
 
 **Effects:**
-- The user's score is updated (+1 for success, 0 for failure) in every active competition they are part of where the event date falls within the competition's date range.
-- The score for either `wakeUpScore` or `bedTimeScore` is adjusted based on the `eventType`.
-- The date is added to `reportedBedtimeDates` or `reportedWakeUpDates` if it's not already in the array.
+- For each active competition the user is in, if the event date is within the competition's range:
+  - If `success` is true, the user's score for the `eventType` is incremented by 1.
+  - The date is recorded to track reporting adherence.
 
 **Request Body:**
 ```json
 {
-  "u": "string",
+  "u": "ID",
   "dateStr": "string",
-  "eventType": "string",
+  "eventType": "SleepEventType",
   "success": "boolean"
 }
 ```
@@ -408,32 +385,32 @@ Code:
 }
 ```
 ---
-
 ### POST /api/CompetitionManager/endCompetition
 
-**Description:** Ends an active competition, determines the winner(s), and marks the competition as inactive.
+**Description:** Ends an active competition, applies penalties for missed reports, and determines the winner(s).
 
 **Requirements:**
-- The current date must be on or after the competition's `endDate`.
 - The competition must be active.
+- The current date must be on or after the competition's `endDate`.
 
 **Effects:**
 - The competition's `active` flag is set to `false`.
-- The `winners` field is set to the user(s) with the highest total score.
-- If all participants tie, `winners` is set to `null`.
+- Penalties are applied to each participant's score for any days they failed to report.
+- The user(s) with the highest final score are calculated and stored as the `winners`.
+- If all participants tie, the `winners` field is set to null.
 - Returns the set of winning user IDs.
 
 **Request Body:**
 ```json
 {
-  "competitionId": "string"
+  "competitionId": "ID"
 }
 ```
 
 **Success Response Body (Action):**
 ```json
 {
-  "winners": ["string"]
+  "winners": "ID[]"
 }
 ```
 
@@ -444,23 +421,54 @@ Code:
 }
 ```
 ---
+### POST /api/CompetitionManager/removeParticipant
 
-### POST /api/CompetitionManager/\_getLeaderboard
-
-**Description:** Retrieves a ranked leaderboard for a specific competition.
+**Description:** Removes a user from an active competition.
 
 **Requirements:**
-- `competitionId` must refer to an existing competition.
+- The competition must be active.
+- The user must be a current participant in the competition.
 
 **Effects:**
-- Retrieves all score entries for the competition.
-- Calculates the total score for each user.
-- Returns a ranked list of all participants in the competition, including their position, user ID, and total score.
+- The specified user is removed from the competition's list of participants.
+- The user's score record for that competition is deleted.
+- If the competition has fewer than two participants remaining, it is deactivated.
 
 **Request Body:**
 ```json
 {
-  "competitionId": "string"
+  "competitionId": "ID",
+  "userId": "ID"
+}
+```
+
+**Success Response Body (Action):**
+```json
+{}
+```
+
+**Error Response Body:**
+```json
+{
+  "error": "string"
+}
+```
+---
+### POST /api/CompetitionManager/_getLeaderboard
+
+**Description:** Retrieves a ranked leaderboard of participants for a given competition.
+
+**Requirements:**
+- The `competitionId` must refer to an existing competition.
+
+**Effects:**
+- Calculates the total score for each participant.
+- Returns a list of participants sorted by their total score in descending order, with rank positions assigned.
+
+**Request Body:**
+```json
+{
+  "competitionId": "ID"
 }
 ```
 
@@ -469,7 +477,7 @@ Code:
 [
   {
     "position": "number",
-    "userId": "string",
+    "userId": "ID",
     "totalScore": "number"
   }
 ]
@@ -480,55 +488,20 @@ Code:
 []
 ```
 ---
-
-### POST /api/CompetitionManager/removeParticipant
-
-**Description:** Removes a user from an active competition and deletes their score.
-
-**Requirements:**
-- `competitionId` must refer to an existing, active competition.
-- `userId` must be a current member of the competition's participants.
-
-**Effects:**
-- The specified user is removed from the competition's `participants` list.
-- The user's `Score` record for that competition is deleted.
-- If the number of participants drops below two, the competition is deactivated.
-
-**Request Body:**
-```json
-{
-  "competitionId": "string",
-  "userId": "string"
-}
-```
-
-**Success Response Body (Action):**
-```json
-{}
-```
-
-**Error Response Body:**
-```json
-{
-  "error": "string"
-}
-```
----
----
 ### POST /api/CompetitionManager/_getCompetitionsForUser
 
-**Description:** Retrieves all competitions that a specific user is a participant in.
+**Description:** Retrieves all competitions that a given user is a participant in.
 
 **Requirements:**
-- A user with the given ID `u` must exist.
+- None.
 
 **Effects:**
-- Returns a list of all `Competition` objects where the user is listed as a participant.
+- Returns a list of all `Competition` objects where the user is in the `participants` list.
 
 **Request Body:**
 ```json
 {
-  "u": "string"
+  "user": "ID"
 }
 ```
 
@@ -536,13 +509,12 @@ Code:
 ```json
 [
   {
-    "_id": "string",
     "name": "string",
-    "participants": ["string"],
-    "startDate": "string",
-    "endDate": "string",
+    "participants": "ID[]",
+    "startDate": "Date",
+    "endDate": "Date",
     "active": "boolean",
-    "winners": ["string"]
+    "winners": "ID[]"
   }
 ]
 ```
@@ -551,37 +523,130 @@ Code:
 ```json
 []
 ```
+---
+### POST /api/CompetitionManager/_getReportedDates
 
+**Description:** Retrieves the list of dates a user has reported for a specific event type in a competition.
 
-# API Specification: SleepSchedule Concept
+**Requirements:**
+- The `competitionId` must refer to an existing competition.
+- The `userId` must be a participant in that competition.
 
-**Purpose:** Let users set bedtime/wake goals, log sleep and wake events, and record daily adherence (did the user follow their targets).
+**Effects:**
+- Returns an array of date strings for which the user has submitted a report for the given `eventType`.
+
+**Request Body:**
+```json
+{
+  "competitionId": "ID",
+  "userId": "ID",
+  "eventType": "SleepEventType"
+}
+```
+
+**Success Response Body (Query):**
+```json
+[
+  {
+    "date": "string"
+  }
+]
+```
+
+**Error Response Body:**
+```json
+[]
+```
+---
+# API Specification: PasswordAuth Concept
+
+**Purpose:** limit access to known users and establish point of contact.
 
 ---
 
 ## API Endpoints
 
-### POST /api/SleepSchedule/addSleepSlot
+### POST /api/PasswordAuth/register
 
-**Description:** Creates a new daily sleep schedule (a "slot") for a user with target bedtime and wake-up times.
+**Description:** Creates a new user account with a username and password.
 
 **Requirements:**
-- `dateStr`, `bedTimeStr`, and `wakeTimeStr` must be valid, parsable date/time strings.
-- `toleranceMins` must be a positive number.
+- No user can already exist with the given `username`.
 
 **Effects:**
-- If a `SleepSlot` already exists for the given user on the specified date, it is removed first.
-- A new `SleepSlot` is created for the user on the given date with the specified time targets and tolerance.
-- The adherence status (`wakeUpSuccess`, `bedTimeSuccess`) is initialized to null.
+- A new user record is created with the provided credentials.
+- Returns the unique ID of the new user.
 
 **Request Body:**
 ```json
 {
-  "u": "string",
-  "bedTimeStr": "string",
-  "wakeTimeStr": "string",
-  "dateStr": "string",
-  "toleranceMins": "number"
+  "username": "string",
+  "password": "string"
+}
+```
+
+**Success Response Body (Action):**
+```json
+{
+  "user": "ID"
+}
+```
+
+**Error Response Body:**
+```json
+{
+  "error": "string"
+}
+```
+---
+### POST /api/PasswordAuth/authenticate
+
+**Description:** Authenticates a user based on their username and password.
+
+**Requirements:**
+- A user must exist with the provided `username` and `password`.
+
+**Effects:**
+- If authentication is successful, returns the unique ID of the authenticated user.
+
+**Request Body:**
+```json
+{
+  "username": "string",
+  "password": "string"
+}
+```
+
+**Success Response Body (Action):**
+```json
+{
+  "user": "ID"
+}
+```
+
+**Error Response Body:**
+```json
+{
+  "error": "string"
+}
+```
+---
+### POST /api/PasswordAuth/changePassword
+
+**Description:** Allows an authenticated user to change their password.
+
+**Requirements:**
+- A user must exist with the provided `username` and `currentPassword`.
+
+**Effects:**
+- The user's password is updated to the `newPassword`.
+
+**Request Body:**
+```json
+{
+  "username": "string",
+  "currentPassword": "string",
+  "newPassword": "string"
 }
 ```
 
@@ -597,23 +662,21 @@ Code:
 }
 ```
 ---
+### POST /api/PasswordAuth/deactivateAccount
 
-### POST /api/SleepSchedule/removeSleepSlot
-
-**Description:** Removes a user's sleep schedule for a specific date.
+**Description:** Deletes a user's account.
 
 **Requirements:**
-- `dateStr` must be a valid, parsable date string.
-- A `SleepSlot` must exist for the user on the specified date.
+- A user must exist with the provided `username` and `password`.
 
 **Effects:**
-- The `SleepSlot` for the user on the given date is removed from the system.
+- The user's account and all associated authentication data are permanently removed.
 
 **Request Body:**
 ```json
 {
-  "u": "string",
-  "dateStr": "string"
+  "username": "string",
+  "password": "string"
 }
 ```
 
@@ -629,94 +692,20 @@ Code:
 }
 ```
 ---
+### POST /api/PasswordAuth/_isRegistered
 
-### POST /api/SleepSchedule/reportBedTime
-
-**Description:** Records the actual time a user went to bed and determines if they met their goal.
+**Description:** Checks if a username is already registered.
 
 **Requirements:**
-- `reportedTimeStr` and `dateStr` must be valid date/time strings.
-- A `SleepSlot` must exist for the user on the specified date.
+- None.
 
 **Effects:**
-- The `bedTimeSuccess` status is updated for the user's `SleepSlot` on the given date. Success is true if the absolute difference between the reported time and target bedtime is within the tolerance (toleranceMins) specified in the SleepSlot.
-- Returns the boolean success status.
+- Returns `true` if a user exists with the given username, otherwise `false`.
 
 **Request Body:**
 ```json
 {
-  "u": "string",
-  "reportedTimeStr": "string",
-  "dateStr": "string"
-}
-```
-
-**Success Response Body (Action):**
-```json
-{
-  "bedTimeSuccess": "boolean"
-}
-```
-
-**Error Response Body:**
-```json
-{
-  "error": "string"
-}
-```
----
-
-### POST /api/SleepSchedule/reportWakeUpTime
-
-**Description:** Records the actual time a user woke up and determines if they met their goal.
-
-**Requirements:**
-- `reportedTimeStr` and `dateStr` must be valid date/time strings.
-- A `SleepSlot` must exist for the user on the specified date.
-
-**Effects:**
-- The `wakeUpSuccess` status is updated for the user's `SleepSlot`. Success is true if the absolute difference between the reported time and target wake-up time is within the tolerance (toleranceMins) specified in the SleepSlot.
-- Returns the boolean success status.
-
-**Request Body:**
-```json
-{
-  "u": "string",
-  "reportedTimeStr": "string",
-  "dateStr": "string"
-}
-```
-
-**Success Response Body (Action):**
-```json
-{
-  "wakeUpSuccess": "boolean"
-}
-```
-
-**Error Response Body:**
-```json
-{
-  "error": "string"
-}
-```
----
-
-### POST /api/SleepSchedule/\_getSleepSlot
-
-**Description:** Retrieves the sleep schedule for a user on a specific date.
-
-**Requirements:**
-- `dateStr` must be a valid date string.
-
-**Effects:**
-- Returns the `SleepSlot` object for the user and date if one exists.
-
-**Request Body:**
-```json
-{
-  "u": "string",
-  "dateStr": "string"
+  "username": "string"
 }
 ```
 
@@ -724,14 +713,7 @@ Code:
 ```json
 [
   {
-    "_id": "string",
-    "u": "string",
-    "date": "string",
-    "bedTime": "string",
-    "wakeUpTime": "string",
-    "toleranceMins": "number",
-    "wakeUpSuccess": "boolean",
-    "bedTimeSuccess": "boolean"
+    "isRegistered": "boolean"
   }
 ]
 ```
@@ -743,21 +725,20 @@ Code:
 }
 ```
 ---
+### POST /api/PasswordAuth/_getUsername
 
-### POST /api/SleepSchedule/\_getAllSleepSlotsForUser
-
-**Description:** Retrieves all sleep schedules for a given user.
+**Description:** Retrieves the username for a given user ID.
 
 **Requirements:**
-- The user must exist.
+- A user must exist with the given `userId`.
 
 **Effects:**
-- Returns an array of all `SleepSlot` objects associated with the user.
+- Returns the username associated with the user ID.
 
 **Request Body:**
 ```json
 {
-  "u": "string"
+  "userId": "ID"
 }
 ```
 
@@ -765,16 +746,78 @@ Code:
 ```json
 [
   {
-    "_id": "string",
-    "u": "string",
-    "date": "string",
-    "bedTime": "string",
-    "wakeUpTime": "string",
-    "toleranceMins": "number",
-    "wakeUpSuccess": "boolean",
-    "bedTimeSuccess": "boolean"
+    "username": "string"
   }
 ]
+```
+
+**Error Response Body:**
+```json
+[]
+```
+---
+### POST /api/PasswordAuth/_getUserByUsername
+
+**Description:** Retrieves the user ID for a given username.
+
+**Requirements:**
+- A user must exist with the given `username`.
+
+**Effects:**
+- Returns the user ID associated with the username.
+
+**Request Body:**
+```json
+{
+  "username": "string"
+}
+```
+
+**Success Response Body (Query):**
+```json
+[
+  {
+    "user": "ID"
+  }
+]
+```
+
+**Error Response Body:**
+```json
+[]
+```
+---
+# API Specification: Sessioning Concept
+
+**Purpose:** To maintain a user's logged-in state across multiple requests without re-sending credentials.
+
+---
+
+## API Endpoints
+
+### POST /api/Sessioning/create
+
+**Description:** Creates a new session for an authenticated user.
+
+**Requirements:**
+- None.
+
+**Effects:**
+- A new session is created and associated with the provided user ID.
+- Returns the unique ID of the new session.
+
+**Request Body:**
+```json
+{
+  "user": "ID"
+}
+```
+
+**Success Response Body (Action):**
+```json
+{
+  "session": "ID"
+}
 ```
 
 **Error Response Body:**
@@ -784,7 +827,66 @@ Code:
 }
 ```
 ---
+### POST /api/Sessioning/delete
 
+**Description:** Deletes a session, effectively logging the user out.
+
+**Requirements:**
+- The provided session must exist.
+
+**Effects:**
+- The session record is removed.
+
+**Request Body:**
+```json
+{
+  "session": "ID"
+}
+```
+
+**Success Response Body (Action):**
+```json
+{}
+```
+
+**Error Response Body:**
+```json
+{
+  "error": "string"
+}
+```
+---
+### POST /api/Sessioning/_getUser
+
+**Description:** Retrieves the user ID associated with a given session.
+
+**Requirements:**
+- The provided session must exist.
+
+**Effects:**
+- Returns the user ID linked to the session.
+
+**Request Body:**
+```json
+{
+  "session": "ID"
+}
+```
+
+**Success Response Body (Query):**
+```json
+[
+  {
+    "user": "ID"
+  }
+]
+```
+
+**Error Response Body:**
+```json
+[]
+```
+---
 # API Specification: SleepSchedule Concept
 
 **Purpose:** Let users set bedtime/wake goals, log sleep and wake events, and record daily adherence (did the user follow their targets).
@@ -795,22 +897,21 @@ Code:
 
 ### POST /api/SleepSchedule/addSleepSlot
 
-**Description:** Creates a new daily sleep schedule for a user with target bedtime and wake-up times.
+**Description:** Creates or updates a user's sleep schedule for a specific date.
 
 **Requirements:**
-- `dateStr`, `bedTimeStr`, and `wakeTimeStr` must be valid strings parseable into `Date` and `Time` objects respectively.
+- `dateStr`, `bedTimeStr`, and `wakeTimeStr` must be valid date and time strings.
 - `toleranceMins` must be a positive number.
 
 **Effects:**
-- Parses the date and time strings.
-- If a `SleepSlot` already exists for the user `u` on the parsed `date`, removes it first.
-- Creates a new `SleepSlot` for the user on the specified date with the target times and tolerance.
-- Initializes `wakeUpSuccess` and `bedTimeSuccess` to `null`.
+- If a sleep slot already exists for the user on the given date, it is replaced.
+- A new `SleepSlot` is created with the user's target bedtime, wake-up time, and tolerance.
+- Adherence flags (`wakeUpSuccess`, `bedTimeSuccess`) are initialized to null.
 
 **Request Body:**
 ```json
 {
-  "u": "string",
+  "u": "ID",
   "bedTimeStr": "string",
   "wakeTimeStr": "string",
   "toleranceMins": "number",
@@ -835,17 +936,16 @@ Code:
 **Description:** Removes a user's sleep schedule for a specific date.
 
 **Requirements:**
-- `dateStr` must be a valid date string parseable into a `Date`.
-- A `SleepSlot` must exist for user `u` on the parsed `date`.
+- `dateStr` must be a valid date string.
+- A sleep slot must exist for the user on the specified date.
 
 **Effects:**
-- Parses `dateStr` into a `Date` object.
-- Removes the `SleepSlot` for the user on that date.
+- The `SleepSlot` record for the user on the given date is deleted.
 
 **Request Body:**
 ```json
 {
-  "u": "string",
+  "u": "ID",
   "dateStr": "string"
 }
 ```
@@ -864,20 +964,20 @@ Code:
 ---
 ### POST /api/SleepSchedule/reportBedTime
 
-**Description:** Records a user's actual bedtime and evaluates whether they met their target.
+**Description:** Records a user's actual bedtime and evaluates adherence against their scheduled target.
 
 **Requirements:**
-- `reportedTimeStr` and `dateStr` must be valid strings parseable into `Time` and `Date` objects respectively.
-- A `SleepSlot` with user `u` and the parsed `date` must exist.
+- `reportedTimeStr` and `dateStr` must be valid date/time strings.
+- A sleep slot must exist for the user on the specified date.
 
 **Effects:**
-- Sets `bedTimeSuccess` for the `SleepSlot` based on whether the `reportedTime` is within the defined tolerance of the target `bedTime`.
-- Returns the calculated `bedTimeSuccess` status.
+- The `bedTimeSuccess` flag for the sleep slot is set to `true` if the reported time is within the tolerance of the target bedtime, and `false` otherwise.
+- Returns the boolean success value.
 
 **Request Body:**
 ```json
 {
-  "u": "string",
+  "u": "ID",
   "reportedTimeStr": "string",
   "dateStr": "string"
 }
@@ -899,20 +999,20 @@ Code:
 ---
 ### POST /api/SleepSchedule/reportWakeUpTime
 
-**Description:** Records a user's actual wake-up time and evaluates whether they met their target.
+**Description:** Records a user's actual wake-up time and evaluates adherence against their scheduled target.
 
 **Requirements:**
-- `reportedTimeStr` and `dateStr` must be valid strings parseable into `Time` and `Date` objects respectively.
-- A `SleepSlot` with user `u` and the parsed `date` must exist.
+- `reportedTimeStr` and `dateStr` must be valid date/time strings.
+- A sleep slot must exist for the user on the specified date.
 
 **Effects:**
-- Sets `wakeUpSuccess` for the `SleepSlot` based on whether the `reportedTime` is within the defined tolerance of the target `wakeUpTime`.
-- Returns the calculated `wakeUpSuccess` status.
+- The `wakeUpSuccess` flag for the sleep slot is set to `true` if the reported time is within the tolerance of the target wake-up time, and `false` otherwise.
+- Returns the boolean success value.
 
 **Request Body:**
 ```json
 {
-  "u": "string",
+  "u": "ID",
   "reportedTimeStr": "string",
   "dateStr": "string"
 }
@@ -937,15 +1037,15 @@ Code:
 **Description:** Retrieves the sleep schedule for a user on a specific date.
 
 **Requirements:**
-- `dateStr` must be a valid date string.
+- None.
 
 **Effects:**
-- Returns the sleep slot for the given user and date, if it exists, including the tolerance setting.
+- Returns the `SleepSlot` object for the user and date if it exists.
 
 **Request Body:**
 ```json
 {
-  "u": "string",
+  "u": "ID",
   "dateStr": "string"
 }
 ```
@@ -954,11 +1054,10 @@ Code:
 ```json
 [
   {
-    "_id": "string",
-    "u": "string",
-    "date": "string",
-    "bedTime": "string",
-    "wakeUpTime": "string",
+    "u": "ID",
+    "date": "Date",
+    "bedTime": "Date",
+    "wakeUpTime": "Date",
     "toleranceMins": "number",
     "wakeUpSuccess": "boolean",
     "bedTimeSuccess": "boolean"
@@ -973,18 +1072,18 @@ Code:
 ---
 ### POST /api/SleepSchedule/_getAllSleepSlotsForUser
 
-**Description:** Retrieves all sleep schedules for a specific user.
+**Description:** Retrieves all sleep schedules for a given user.
 
 **Requirements:**
-- None
+- None.
 
 **Effects:**
-- Returns an array of all sleep slots associated with the given user, including tolerance settings.
+- Returns all `SleepSlot` objects associated with the specified user.
 
 **Request Body:**
 ```json
 {
-  "u": "string"
+  "u": "ID"
 }
 ```
 
@@ -992,11 +1091,10 @@ Code:
 ```json
 [
   {
-    "_id": "string",
-    "u": "string",
-    "date": "string",
-    "bedTime": "string",
-    "wakeUpTime": "string",
+    "u": "ID",
+    "date": "Date",
+    "bedTime": "Date",
+    "wakeUpTime": "Date",
     "toleranceMins": "number",
     "wakeUpSuccess": "boolean",
     "bedTimeSuccess": "boolean"
@@ -1006,209 +1104,6 @@ Code:
 
 **Error Response Body:**
 ```json
-{
-  "error": "string"
-}
-```
----
-
-
-# API Specification: PasswordAuth Concept
-
-**Purpose:** limit access to known users and establish point of contact.
-
----
-
-## API Endpoints
-
-### POST /api/PasswordAuth/register
-
-**Description:** Creates a new user account with a username and password.
-
-**Requirements:**
-- No User exists with the provided `username`.
-
-**Effects:**
-- Adds a new User with the given username and password to the system.
-- Returns the unique ID of the new User.
-
-**Request Body:**
-```json
-{
-  "username": "string",
-  "password": "string"
-}
-```
-
-**Success Response Body (Action):**
-```json
-{
-  "user": "string"
-}
-```
-
-**Error Response Body:**
-```json
-{
-  "error": "string"
-}
-```
----
-### POST /api/PasswordAuth/authenticate
-
-**Description:** Authenticates a user with their username and password.
-
-**Requirements:**
-- A User must exist with the provided `username` and `password`.
-
-**Effects:**
-- Returns the corresponding user's unique ID.
-
-**Request Body:**
-```json
-{
-  "username": "string",
-  "password": "string"
-}
-```
-
-**Success Response Body (Action):**
-```json
-{
-  "user": "string"
-}
-```
-
-**Error Response Body:**
-```json
-{
-  "error": "string"
-}
-```
----
-### POST /api/PasswordAuth/changePassword
-
-**Description:** Changes a user's password after verifying their current password.
-
-**Requirements:**
-- A User must exist with the provided `username` and `currentPassword`.
-
-**Effects:**
-- The user's password is updated to `newPassword`.
-
-**Request Body:**
-```json
-{
-  "username": "string",
-  "currentPassword": "string",
-  "newPassword": "string"
-}
-```
-
-**Success Response Body (Action):**
-```json
-{}
-```
-
-**Error Response Body:**
-```json
-{
-  "error": "string"
-}
-```
----
-### POST /api/PasswordAuth/_isRegistered
-
-**Description:** Checks if a username is already registered in the system.
-
-**Requirements:**
-- None.
-
-**Effects:**
-- Returns an array with a single object containing `isRegistered: true` if a User exists with the given username, otherwise `isRegistered: false`.
-
-**Request Body:**
-```json
-{
-  "username": "string"
-}
-```
-
-**Success Response Body (Query):**
-```json
-[
-  {
-    "isRegistered": "boolean"
-  }
-]
-```
-
-**Error Response Body:**
-```json
 []
-```
----
----
-
-### POST /api/PasswordAuth/_getUsername
-
-**Description:** Retrieves the username for a given user ID.
-
-**Requirements:**
-- A user with the given `userId` must exist.
-
-**Effects:**
-- Returns the `username` of the specified user.
-
-**Request Body:**
-```json
-{
-  "userId": "string"
-}
-```
-
-**Success Response Body (Query):**
-```json
-[
-{
-  "username": "string"
-}
-]
-```
-
-**Error Response Body:**
-```json
-[]
-```
----
-
-### POST /api/PasswordAuth/deactivateAccount
-
-**Description:** Deletes a user's account from the system.
-
-**Requirements:**
-- A User must exist with the provided `username` and `password`.
-
-**Effects:**
-- The User with the matching username and password is removed.
-
-**Request Body:**
-```json
-{
-  "username": "string",
-  "password": "string"
-}
-```
-
-**Success Response Body (Action):**
-```json
-{}
-```
-
-**Error Response Body:**
-```json
-{
-  "error": "string"
-}
 ```
 ---

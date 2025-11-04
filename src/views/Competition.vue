@@ -107,7 +107,9 @@
                 >
                 <span v-else class="position-number">{{ entry.position }}</span>
               </div>
-              <div class="col-username">{{ entry.userId }}</div>
+              <div class="col-username">
+                {{ entry.username || entry.userId }}
+              </div>
               <div class="col-score">{{ entry.totalScore }}</div>
               <div class="col-report">{{ entry.bedtimeReports || "0/0" }}</div>
               <div class="col-report">{{ entry.wakeupReports || "0/0" }}</div>
@@ -278,7 +280,7 @@
 </template>
 
 <script>
-import { competitionManagerAPI } from "../services/api";
+import { competitionManagerAPI, passwordAuthAPI } from "../services/api";
 import authStore from "../stores/authStore";
 
 export default {
@@ -321,13 +323,13 @@ export default {
       this.errorMessage = "";
 
       try {
-        const username = authStore.getUsername();
-        if (!username) {
+        const userId = authStore.getUserId();
+        if (!userId) {
           throw new Error("Please log in to view competitions");
         }
 
         const competitionsData =
-          await competitionManagerAPI.getCompetitionsForUser(username);
+          await competitionManagerAPI.getCompetitionsForUser(userId);
 
         console.log("Raw API response:", competitionsData);
         console.log("Response type:", typeof competitionsData);
@@ -426,10 +428,15 @@ export default {
               (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
             ) + 1;
 
-          // Fetch report counts for each participant
+          // Fetch report counts for each participant and convert userId to username
           this.leaderboard = await Promise.all(
             leaderboardData.map(async (entry) => {
               try {
+                // Get username for display
+                const username = await passwordAuthAPI.getUsername(
+                  entry.userId
+                );
+
                 const [bedtimeDates, wakeupDates] = await Promise.all([
                   competitionManagerAPI.getReportedDates(
                     this.selectedCompetitionId,
@@ -452,6 +459,7 @@ export default {
 
                 return {
                   ...entry,
+                  username: username || entry.userId, // Display username, fallback to userId
                   bedtimeReports: `${bedtimeCount}/${totalDays}`,
                   wakeupReports: `${wakeupCount}/${totalDays}`,
                 };
@@ -468,12 +476,14 @@ export default {
                   console.warn(`Timeout fetching reports for ${entry.userId}`);
                   return {
                     ...entry,
+                    username: entry.username || entry.userId, // Preserve username if already set
                     bedtimeReports: "?/?",
                     wakeupReports: "?/?",
                   };
                 }
                 return {
                   ...entry,
+                  username: entry.userId, // Fallback to userId if username lookup fails
                   bedtimeReports: "0/0",
                   wakeupReports: "0/0",
                 };

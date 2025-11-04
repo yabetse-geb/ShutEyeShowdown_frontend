@@ -181,27 +181,46 @@ export default {
   methods: {
     async loadPartners() {
       try {
-        const currentUser = authStore.getUsername();
-        if (!currentUser) {
+        const currentUserId = authStore.getUserId();
+        if (!currentUserId) {
           this.errorMessage = "Please log in to view accountability partners.";
           return;
         }
 
         const partnerships = await accountabilityAPI.getPartnerships(
-          currentUser
+          currentUserId
         );
 
         // Only include partnerships the current user initiated
-        const initiated = partnerships.filter((p) => p.user === currentUser);
+        const initiated = partnerships.filter((p) => p.user === currentUserId);
 
-        // Transform to local structure
-        this.partners = initiated.map((partnership) => ({
-          username: partnership.partner,
-          reportFrequency: partnership.reportFrequency,
-          notifyTypes: partnership.notifyTypes,
-          partnershipId: partnership._id,
-          lastReportDate: partnership.lastReportDate,
-        }));
+        // Transform to local structure and convert partner IDs to usernames
+        this.partners = await Promise.all(
+          initiated.map(async (partnership) => {
+            try {
+              const username = await passwordAuthAPI.getUsername(
+                partnership.partner
+              );
+              return {
+                userId: partnership.partner,
+                username: username || partnership.partner,
+                reportFrequency: partnership.reportFrequency,
+                notifyTypes: partnership.notifyTypes,
+                partnershipId: partnership._id,
+                lastReportDate: partnership.lastReportDate,
+              };
+            } catch (e) {
+              return {
+                userId: partnership.partner,
+                username: partnership.partner,
+                reportFrequency: partnership.reportFrequency,
+                notifyTypes: partnership.notifyTypes,
+                partnershipId: partnership._id,
+                lastReportDate: partnership.lastReportDate,
+              };
+            }
+          })
+        );
       } catch (error) {
         console.error("Failed to load partners:", error);
         this.errorMessage =
@@ -211,28 +230,39 @@ export default {
 
     async loadSeekers() {
       try {
-        const currentUser = authStore.getUsername();
-        if (!currentUser) {
+        const currentUserId = authStore.getUserId();
+        if (!currentUserId) {
           return;
         }
 
-        const seekersRaw = await accountabilityAPI.getSeekersForUser(
-          currentUser
-        );
-        const seekerIds = Array.isArray(seekersRaw) ? seekersRaw : [];
+        // Note: getSeekersForUser endpoint may not exist in API specs
+        // If it fails, we'll just skip loading seekers
+        try {
+          const seekersRaw = await accountabilityAPI.getSeekersForUser(
+            currentUserId
+          );
+          const seekerIds = Array.isArray(seekersRaw) ? seekersRaw : [];
 
-        const seekersWithUsernames = await Promise.all(
-          seekerIds.map(async (id) => {
-            try {
-              const username = await passwordAuthAPI.getUsername(id);
-              return { user: id, username: username || id };
-            } catch (e) {
-              return { user: id, username: id };
-            }
-          })
-        );
+          const seekersWithUsernames = await Promise.all(
+            seekerIds.map(async (id) => {
+              try {
+                const username = await passwordAuthAPI.getUsername(id);
+                return { user: id, username: username || id };
+              } catch (e) {
+                return { user: id, username: id };
+              }
+            })
+          );
 
-        this.seekers = seekersWithUsernames;
+          this.seekers = seekersWithUsernames;
+        } catch (error) {
+          // If endpoint doesn't exist, just log and continue
+          console.warn(
+            "getSeekersForUser endpoint may not be available:",
+            error
+          );
+          this.seekers = [];
+        }
       } catch (error) {
         console.error("Failed to load accountability seekers:", error);
       }
@@ -253,25 +283,44 @@ export default {
       this.isLoading = true;
 
       try {
-        const currentUser = authStore.getUsername();
-        if (!currentUser) {
+        const currentUserId = authStore.getUserId();
+        if (!currentUserId) {
           throw new Error("Please log in to add accountability partners.");
         }
 
         // Validate if partner exists in the system
-        const response = await passwordAuthAPI.isRegistered(
-          this.currentPartner
-        );
-        // Response is an array: [{ isRegistered: boolean }] or [] (error)
-        if (!response || response.length === 0 || !response[0]?.isRegistered) {
+        try {
+          const response = await passwordAuthAPI.isRegistered(
+            this.currentPartner
+          );
+          // Response is an array: [{ isRegistered: boolean }]
+          if (
+            !response ||
+            response.length === 0 ||
+            !response[0]?.isRegistered
+          ) {
+            this.errorMessage = `User '${this.currentPartner}' is not registered.`;
+            return;
+          }
+        } catch (error) {
+          // API returns error object on error
           this.errorMessage = `User '${this.currentPartner}' is not registered.`;
           return;
         }
 
-        // Add partner with default settings
+        // Convert partner username to user ID
+        const partnerUserId = await passwordAuthAPI.getUserByUsername(
+          this.currentPartner
+        );
+        if (!partnerUserId) {
+          this.errorMessage = `User '${this.currentPartner}' not found.`;
+          return;
+        }
+
+        // Add partner with default settings (using user IDs)
         await accountabilityAPI.addPartner(
-          currentUser,
-          this.currentPartner,
+          currentUserId,
+          partnerUserId,
           ["BEDTIME", "WAKETIME"], // Default notification types
           "Daily" // Default report frequency
         );
@@ -295,16 +344,17 @@ export default {
 
     async removePartner(index) {
       try {
-        const currentUser = authStore.getUsername();
+        const currentUserId = authStore.getUserId();
         const partnerToRemove = this.partners[index];
 
-        if (!currentUser) {
+        if (!currentUserId) {
           throw new Error("Please log in to remove accountability partners.");
         }
 
+        // Use partner's user ID (stored in userId field)
         await accountabilityAPI.removePartner(
-          currentUser,
-          partnerToRemove.username
+          currentUserId,
+          partnerToRemove.userId || partnerToRemove.username
         );
 
         this.successMessage = `Partner '${partnerToRemove.username}' removed successfully!`;
@@ -332,16 +382,17 @@ export default {
 
     async savePartnerSettings() {
       try {
-        const currentUser = authStore.getUsername();
+        const currentUserId = authStore.getUserId();
         const partner = this.partners[this.editForm.partnerIndex];
 
-        if (!currentUser) {
+        if (!currentUserId) {
           throw new Error("Please log in to update partner settings.");
         }
 
+        // Use partner's user ID (stored in userId field)
         await accountabilityAPI.updatePreferences(
-          currentUser,
-          partner.username,
+          currentUserId,
+          partner.userId || partner.username,
           this.editForm.notifyTypes,
           this.editForm.reportFrequency
         );

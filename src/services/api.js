@@ -143,6 +143,27 @@ export const passwordAuthAPI = {
     }
   },
 
+  // Get user ID by username
+  async getUserByUsername(username) {
+    try {
+      const response = await apiClient.post(
+        "/api/PasswordAuth/_getUserByUsername",
+        {
+          username,
+        }
+      );
+      // Success response is an array: [{ user: ID }]
+      // Error response is an empty array: []
+      if (Array.isArray(response.data) && response.data.length > 0) {
+        return response.data[0].user;
+      }
+      return null; // User not found or error
+    } catch (error) {
+      // On error, return null (API spec says error response is empty array)
+      return null;
+    }
+  },
+
   // Check if username is registered
   async isRegistered(username) {
     try {
@@ -150,15 +171,19 @@ export const passwordAuthAPI = {
         username,
       });
       // Success response: [{ isRegistered: boolean }]
-      // Error response: [] (empty array)
-      if (Array.isArray(response.data) && response.data.length > 0) {
-        return response.data;
+      // Error response: { error: string }
+      if (response.data.error) {
+        throw new Error(response.data.error);
       }
-      // Empty array means error - return empty array
-      return [];
+
+      // Return the array response (spec says Query returns array)
+      return Array.isArray(response.data) ? response.data : [];
     } catch (error) {
-      // On error, return empty array (API spec says error response is empty array)
-      return [];
+      throw new Error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to check registration status"
+      );
     }
   },
 
@@ -282,19 +307,16 @@ export const sleepScheduleAPI = {
       );
 
       // Success response: [{ SleepSlot }] (array)
-      // Error response: { error: string } (object)
-      if (response.data.error) {
-        throw new Error(response.data.error);
+      // Error response: [] (empty array)
+      if (Array.isArray(response.data)) {
+        return response.data;
       }
 
-      // Return the array response (spec says Query returns array)
-      return Array.isArray(response.data) ? response.data : [];
+      // If not an array, return empty array (error response format)
+      return [];
     } catch (error) {
-      throw new Error(
-        error.response?.data?.error ||
-          error.message ||
-          "Failed to get sleep slots"
-      );
+      // On error, return empty array (API spec says error response is empty array)
+      return [];
     }
   },
 
@@ -419,6 +441,8 @@ export const competitionManagerAPI = {
         throw new Error(response.data.error);
       }
 
+      // Success response: { winners: ID[] | null }
+      // Note: winners can be null if all participants tie (per spec description)
       return response.data;
     } catch (error) {
       throw new Error(
@@ -491,7 +515,7 @@ export const competitionManagerAPI = {
       const response = await apiClient.post(
         "/api/CompetitionManager/_getCompetitionsForUser",
         {
-          u: userId,
+          user: userId,
         }
       );
 
@@ -525,17 +549,24 @@ export const competitionManagerAPI = {
         }
       );
 
-      if (response.data.error) {
-        throw new Error(response.data.error);
+      // Success response: [{ date: string }] (array of objects)
+      // Error response: [] (empty array)
+      // Note: API spec says array of objects, but backend might return string[]
+      // Handle both formats for compatibility
+      if (Array.isArray(response.data)) {
+        // If it's an array of objects with date property, return as is
+        // If it's an array of strings, convert to array of objects
+        if (response.data.length > 0 && typeof response.data[0] === "string") {
+          return response.data.map((date) => ({ date }));
+        }
+        return response.data;
       }
 
-      return response.data;
+      // If not an array, return empty array (error response format)
+      return [];
     } catch (error) {
-      throw new Error(
-        error.response?.data?.error ||
-          error.message ||
-          "Failed to get reported dates"
-      );
+      // On error, return empty array (API spec says error response is empty array)
+      return [];
     }
   },
 };
@@ -660,6 +691,7 @@ export const accountabilityAPI = {
         throw new Error(response.data.error);
       }
 
+      // Success response: { message: string } (changed from report to message)
       return response.data;
     } catch (error) {
       throw new Error(
@@ -706,19 +738,16 @@ export const accountabilityAPI = {
       );
 
       // Success response: [{ Partnership }] (array)
-      // Error response: { error: string } (object)
-      if (response.data.error) {
-        throw new Error(response.data.error);
+      // Error response: [] (empty array)
+      if (Array.isArray(response.data)) {
+        return response.data;
       }
 
-      // Return the array response (spec says Query returns array)
-      return Array.isArray(response.data) ? response.data : [];
+      // If not an array, return empty array (error response format)
+      return [];
     } catch (error) {
-      throw new Error(
-        error.response?.data?.error ||
-          error.message ||
-          "Failed to get partnerships"
-      );
+      // On error, return empty array (API spec says error response is empty array)
+      return [];
     }
   },
 

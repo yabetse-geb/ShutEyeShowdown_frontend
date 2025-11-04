@@ -92,30 +92,40 @@ export default {
       this.errorMessage = "";
       this.isLoading = true;
       try {
-        const currentUser = authStore.getUsername();
-        if (!currentUser) {
+        const currentUserId = authStore.getUserId();
+        if (!currentUserId) {
           this.errorMessage = "Please log in to view your inbox.";
           return;
         }
 
-        const seekersRaw = await accountabilityAPI.getSeekersForUser(
-          currentUser
-        );
+        // Note: getSeekersForUser endpoint may not exist in API specs
+        try {
+          const seekersRaw = await accountabilityAPI.getSeekersForUser(
+            currentUserId
+          );
 
-        const seekerIds = Array.isArray(seekersRaw) ? seekersRaw : [];
+          const seekerIds = Array.isArray(seekersRaw) ? seekersRaw : [];
 
-        const resolved = await Promise.all(
-          seekerIds.map(async (id) => {
-            try {
-              const username = await passwordAuthAPI.getUsername(id);
-              return { user: id, username: username || id };
-            } catch (e) {
-              return { user: id, username: id };
-            }
-          })
-        );
+          const resolved = await Promise.all(
+            seekerIds.map(async (id) => {
+              try {
+                const username = await passwordAuthAPI.getUsername(id);
+                return { user: id, username: username || id };
+              } catch (e) {
+                return { user: id, username: id };
+              }
+            })
+          );
 
-        this.seekers = resolved;
+          this.seekers = resolved;
+        } catch (error) {
+          // If endpoint doesn't exist, just log and continue
+          console.warn(
+            "getSeekersForUser endpoint may not be available:",
+            error
+          );
+          this.seekers = [];
+        }
       } catch (e) {
         this.errorMessage = e.message || "Failed to load inbox.";
       } finally {
@@ -129,13 +139,14 @@ export default {
       this.reportsError = "";
       this.reportsLoading = true;
       try {
-        const currentUser = authStore.getUsername();
-        if (!currentUser) {
+        const currentUserId = authStore.getUserId();
+        if (!currentUserId) {
           this.reportsError = "Please log in to view reports.";
           return;
         }
+        // Note: getAllReports endpoint may not exist in API specs
         const result = await accountabilityAPI.getAllReports(
-          currentUser,
+          currentUserId,
           seeker.user
         );
         this.reports = Array.isArray(result) ? result : [];

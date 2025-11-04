@@ -206,10 +206,10 @@ export default {
           success = result.wakeUpSuccess;
         }
 
-        // Call recordStat to update competition scores using username (competitions store usernames)
+        // Call recordStat to update competition scores using user ID
         try {
           await competitionManagerAPI.recordStat(
-            username,
+            userId,
             dateStr,
             eventType,
             success
@@ -217,7 +217,7 @@ export default {
           console.log(
             `Competition score updated: ${eventType} ${
               success ? "success" : "failure"
-            } for ${username} on ${dateStr}`
+            } for ${userId} on ${dateStr}`
           );
         } catch (competitionError) {
           // Don't fail the entire operation if competition update fails
@@ -230,7 +230,7 @@ export default {
         // Call recordFailure for Accountability system if this was a failure
         if (!success) {
           try {
-            await accountabilityAPI.recordFailure(username, dateStr, eventType);
+            await accountabilityAPI.recordFailure(userId, dateStr, eventType);
             console.log(
               `Accountability failure recorded: ${eventType} failure for ${username} on ${dateStr}`
             );
@@ -245,7 +245,7 @@ export default {
 
         // Always attempt to update reports for the user and date
         try {
-          await accountabilityAPI.updateReports(username, dateStr);
+          await accountabilityAPI.updateReports(userId, dateStr);
         } catch (updateError) {
           console.warn("Failed to update reports:", updateError.message);
         }

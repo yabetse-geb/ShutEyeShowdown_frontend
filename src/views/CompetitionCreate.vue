@@ -126,7 +126,7 @@
           <button
             type="submit"
             class="btn btn-primary btn-large"
-            :disabled="isLoading || participants.length < 1"
+            :disabled="isLoading"
           >
             <span v-if="isLoading" class="loading-spinner"></span>
             {{ isLoading ? "Creating..." : "Create Competition" }}
@@ -138,7 +138,7 @@
 </template>
 
 <script>
-import { competitionManagerAPI } from "../services/api";
+import { competitionManagerAPI, passwordAuthAPI } from "../services/api";
 import authStore from "../stores/authStore";
 
 export default {
@@ -182,8 +182,8 @@ export default {
       }
 
       // Add current user automatically if not already added
-      const currentUser = authStore.getUsername();
-      if (username === currentUser) {
+      const currentUsername = authStore.getUsername();
+      if (username === currentUsername) {
         this.errors.participant =
           "You are automatically included in the competition";
         return;
@@ -227,10 +227,8 @@ export default {
         }
       }
 
-      if (this.participants.length < 1) {
-        this.errors.participant = "Please add at least one participant";
-        isValid = false;
-      }
+      // Note: Validation for participants count is handled in handleSubmit
+      // since the current user is automatically added
 
       return isValid;
     },
@@ -245,28 +243,53 @@ export default {
       this.isLoading = true;
 
       try {
-        const currentUser = authStore.getUserId();
-        if (!currentUser) {
+        const currentUserId = authStore.getUserId();
+        if (!currentUserId) {
           throw new Error("Please log in to create competitions");
         }
 
-        // Add current user to participants if not already included
-        const allParticipants = [...this.participants];
-        const currentUsername = authStore.getUsername();
-        if (!allParticipants.includes(currentUsername)) {
-          allParticipants.push(currentUsername);
+        // The API expects user IDs, not usernames
+        // Build participants array with current user's ID
+        const allParticipantIds = [currentUserId];
+
+        // Convert participant usernames to user IDs
+        for (const username of this.participants) {
+          const trimmedUsername = username.trim();
+          if (!trimmedUsername) continue;
+
+          // Get user ID from username
+          const userId = await passwordAuthAPI.getUserByUsername(
+            trimmedUsername
+          );
+          if (!userId) {
+            throw new Error(
+              `User "${trimmedUsername}" not found. Please check the username and try again.`
+            );
+          }
+
+          // Avoid duplicates
+          if (!allParticipantIds.includes(userId)) {
+            allParticipantIds.push(userId);
+          }
+        }
+
+        // Ensure we have at least 2 participants (API requirement)
+        if (allParticipantIds.length < 2) {
+          throw new Error(
+            "At least one additional participant is required (you are automatically included)"
+          );
         }
 
         console.log("Creating competition with data:", {
           name: this.formData.name,
-          participants: allParticipants,
+          participants: allParticipantIds,
           startDate: this.formData.startDate,
           endDate: this.formData.endDate,
         });
 
         const result = await competitionManagerAPI.startCompetition(
           this.formData.name,
-          allParticipants,
+          allParticipantIds,
           this.formData.startDate,
           this.formData.endDate
         );
@@ -498,6 +521,14 @@ export default {
   color: #e74c3c;
   font-size: 0.8rem;
   margin-top: 0.25rem;
+}
+
+.form-hint {
+  display: block;
+  color: rgba(230, 234, 248, 0.6);
+  font-size: 0.75rem;
+  margin-top: 0.5rem;
+  font-style: italic;
 }
 
 .error-banner {
