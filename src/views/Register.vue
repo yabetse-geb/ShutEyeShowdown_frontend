@@ -125,17 +125,42 @@ export default {
 
         console.log("Registration successful:", response);
 
-        // Store user data in auth store
-        authStore.setUser({
-          username: this.form.username,
-          user: response.user,
-        });
+        // Auto-login after registration to get session
+        try {
+          const loginResponse = await passwordAuthAPI.authenticate(
+            this.form.username,
+            this.form.password
+          );
 
-        // Force reactivity update by dispatching a custom event
-        window.dispatchEvent(new CustomEvent("authStateChanged"));
+          // Store user data with session in auth store
+          // Response from authenticate is the session ID directly (per sync specs)
+          const sessionId =
+            typeof loginResponse === "string"
+              ? loginResponse
+              : loginResponse.session || loginResponse.id || loginResponse;
 
-        // Redirect to home page
-        this.$router.push("/");
+          // Store session (user ID will be fetched when needed using _getUser)
+          authStore.setUser({
+            username: this.form.username,
+            session: sessionId,
+          });
+
+          // Force reactivity update by dispatching a custom event
+          window.dispatchEvent(new CustomEvent("authStateChanged"));
+
+          // Redirect to home page
+          this.$router.push("/");
+        } catch (loginError) {
+          console.error("Auto-login after registration failed:", loginError);
+          // Still set user data even if auto-login fails (user can login manually)
+          authStore.setUser({
+            username: this.form.username,
+            user: response.user,
+            session: null,
+          });
+          this.errorMessage =
+            "Registration successful, but auto-login failed. Please log in manually.";
+        }
       } catch (error) {
         console.error("Registration failed:", error);
         this.errorMessage = error.message;

@@ -93,11 +93,65 @@ export default {
           this.form.password
         );
 
-        // Store user data in auth store
-        authStore.setUser({
+        console.log("Login response:", response);
+        console.log("Response type:", typeof response);
+
+        // Store user data with session in auth store
+        // Response from authenticate is the session ID directly (per sync specs: LoginResponse responds with { request, session })
+        // The response.data should be the session ID directly
+        // Handle different response formats
+        let sessionId = null;
+        if (typeof response === "string") {
+          sessionId = response;
+        } else if (response && typeof response === "object") {
+          // Try common property names first
+          sessionId = response.session || response.id || response.s;
+          // If none of those exist, the response itself might be the session ID
+          // But only if it's a primitive value (string, number)
+          if (
+            !sessionId &&
+            (typeof response === "string" || typeof response === "number")
+          ) {
+            sessionId = response;
+          }
+        }
+
+        console.log("Extracted sessionId:", sessionId);
+        console.log("SessionId type:", typeof sessionId);
+
+        if (!sessionId) {
+          console.error("No session ID found in response:", response);
+          throw new Error("Login failed: No session received from server");
+        }
+
+        // Validate that sessionId is a primitive value (string, number), not an object
+        if (typeof sessionId === "object") {
+          console.error(
+            "Session ID is an object, not a primitive. Response was:",
+            response
+          );
+          throw new Error(
+            "Login failed: Invalid session format received from server"
+          );
+        }
+
+        // Store session (user ID will be fetched when needed using _getUser)
+        const userData = {
           username: this.form.username,
-          user: response.user,
-        });
+          session: String(sessionId), // Ensure it's a string
+        };
+
+        console.log("Storing user data:", userData);
+        authStore.setUser(userData);
+
+        // Verify session was stored
+        const storedSession = authStore.getSession();
+        console.log("Stored session:", storedSession);
+        if (!storedSession) {
+          throw new Error(
+            "Failed to store session. Please try logging in again."
+          );
+        }
 
         // Force reactivity update by dispatching a custom event
         window.dispatchEvent(new CustomEvent("authStateChanged"));

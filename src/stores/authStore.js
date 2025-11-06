@@ -2,6 +2,7 @@
 class AuthStore {
   constructor() {
     this.currentUser = null;
+    this.session = null;
     this.isAuthenticated = false;
     this.loadFromStorage();
   }
@@ -11,8 +12,10 @@ class AuthStore {
     try {
       const storedUser = localStorage.getItem("shutEyeUser");
       if (storedUser) {
-        this.currentUser = JSON.parse(storedUser);
-        this.isAuthenticated = true;
+        const parsed = JSON.parse(storedUser);
+        this.currentUser = parsed;
+        this.session = parsed?.session || null;
+        this.isAuthenticated = this.session !== null;
       }
     } catch (error) {
       console.error("Error loading auth state from storage:", error);
@@ -38,16 +41,18 @@ class AuthStore {
     localStorage.removeItem("shutEyeUser");
   }
 
-  // Set authenticated user
+  // Set authenticated user with session
   setUser(userData) {
     this.currentUser = userData;
-    this.isAuthenticated = true;
+    this.session = userData?.session || null;
+    this.isAuthenticated = this.session !== null;
     this.saveToStorage();
   }
 
-  // Clear user data
+  // Clear user data and session
   clearUser() {
     this.currentUser = null;
+    this.session = null;
     this.isAuthenticated = false;
     this.clearStorage();
   }
@@ -59,17 +64,17 @@ class AuthStore {
 
   // Check if user is authenticated
   isLoggedIn() {
-    return this.isAuthenticated && this.currentUser !== null;
+    return this.isAuthenticated && this.session !== null;
+  }
+
+  // Get session ID
+  getSession() {
+    return this.session;
   }
 
   // Get username
   getUsername() {
     return this.currentUser?.username || null;
-  }
-
-  // Get user ID
-  getUserId() {
-    return this.currentUser?.user || null;
   }
 }
 

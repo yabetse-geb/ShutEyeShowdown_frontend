@@ -91,7 +91,7 @@
 </template>
 
 <script>
-import { sleepScheduleAPI } from "../services/api";
+import { sleepScheduleAPI, sessioningAPI } from "../services/api";
 import authStore from "../stores/authStore";
 
 export default {
@@ -128,9 +128,17 @@ export default {
   methods: {
     async loadExistingSchedule() {
       try {
-        const userId = authStore.getUserId();
-        if (!userId) {
+        // OLD WAY (for reversion): const userId = authStore.getUserId();
+        // NEW WAY: Get user ID from session using _getUser
+        const session = authStore.getSession();
+        if (!session) {
           this.errorMessage = "Please log in to view your sleep schedule";
+          return;
+        }
+        const userId = await sessioningAPI.getUser(session);
+        if (!userId) {
+          this.errorMessage =
+            "Failed to load user information. Please log in again.";
           return;
         }
 
@@ -230,9 +238,17 @@ export default {
       this.isLoading = true;
 
       try {
-        const userId = authStore.getUserId();
-        if (!userId) {
+        // OLD WAY (for reversion): const userId = authStore.getUserId();
+        // NEW WAY: Get user ID from session using _getUser
+        const session = authStore.getSession();
+        if (!session) {
           throw new Error("Please log in to save your sleep schedule");
+        }
+        const userId = await sessioningAPI.getUser(session);
+        if (!userId) {
+          throw new Error(
+            "Failed to load user information. Please log in again."
+          );
         }
 
         const today = new Date();
@@ -338,7 +354,18 @@ export default {
           this.successMessage = "";
         }, 3000);
       } catch (error) {
-        this.errorMessage = error.message;
+        console.error("Error saving sleep schedule:", error);
+        // Check if it's a session error
+        if (
+          error.message &&
+          (error.message.includes("session") ||
+            error.message.includes("log in"))
+        ) {
+          this.errorMessage = "Your session has expired. Please log in again.";
+        } else {
+          this.errorMessage =
+            error.message || "Failed to save sleep schedule. Please try again.";
+        }
       } finally {
         this.isLoading = false;
       }

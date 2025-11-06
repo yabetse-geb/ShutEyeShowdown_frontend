@@ -153,7 +153,11 @@
 </template>
 
 <script>
-import { accountabilityAPI, passwordAuthAPI } from "../services/api";
+import {
+  accountabilityAPI,
+  passwordAuthAPI,
+  sessioningAPI,
+} from "../services/api";
 import authStore from "../stores/authStore";
 
 export default {
@@ -181,9 +185,17 @@ export default {
   methods: {
     async loadPartners() {
       try {
-        const currentUserId = authStore.getUserId();
-        if (!currentUserId) {
+        // OLD WAY (for reversion): const currentUserId = authStore.getUserId();
+        // NEW WAY: Get user ID from session using _getUser
+        const session = authStore.getSession();
+        if (!session) {
           this.errorMessage = "Please log in to view accountability partners.";
+          return;
+        }
+        const currentUserId = await sessioningAPI.getUser(session);
+        if (!currentUserId) {
+          this.errorMessage =
+            "Failed to load user information. Please log in again.";
           return;
         }
 
@@ -191,8 +203,22 @@ export default {
           currentUserId
         );
 
+        console.log("Accountability: Partnerships received:", partnerships);
+        console.log("Accountability: Current user ID:", currentUserId);
+        console.log("Accountability: User ID type:", typeof currentUserId);
+
         // Only include partnerships the current user initiated
-        const initiated = partnerships.filter((p) => p.user === currentUserId);
+        // Convert both to strings for comparison (IDs might be objects or strings)
+        const currentUserIdStr = String(currentUserId);
+        const initiated = partnerships.filter((p) => {
+          const pUserStr = String(p.user);
+          const matches = pUserStr === currentUserIdStr;
+          console.log(
+            `Accountability: Partnership user ${pUserStr} === ${currentUserIdStr}? ${matches}`
+          );
+          return matches;
+        });
+        console.log("Accountability: Initiated partnerships:", initiated);
 
         // Transform to local structure and convert partner IDs to usernames
         this.partners = await Promise.all(
@@ -230,7 +256,13 @@ export default {
 
     async loadSeekers() {
       try {
-        const currentUserId = authStore.getUserId();
+        // OLD WAY (for reversion): const currentUserId = authStore.getUserId();
+        // NEW WAY: Get user ID from session using _getUser
+        const session = authStore.getSession();
+        if (!session) {
+          return;
+        }
+        const currentUserId = await sessioningAPI.getUser(session);
         if (!currentUserId) {
           return;
         }
@@ -283,9 +315,17 @@ export default {
       this.isLoading = true;
 
       try {
-        const currentUserId = authStore.getUserId();
-        if (!currentUserId) {
+        // OLD WAY (for reversion): const currentUserId = authStore.getUserId();
+        // NEW WAY: Get user ID from session using _getUser
+        const session = authStore.getSession();
+        if (!session) {
           throw new Error("Please log in to add accountability partners.");
+        }
+        const currentUserId = await sessioningAPI.getUser(session);
+        if (!currentUserId) {
+          throw new Error(
+            "Failed to load user information. Please log in again."
+          );
         }
 
         // Validate if partner exists in the system
@@ -344,11 +384,19 @@ export default {
 
     async removePartner(index) {
       try {
-        const currentUserId = authStore.getUserId();
+        // OLD WAY (for reversion): const currentUserId = authStore.getUserId();
+        // NEW WAY: Get user ID from session using _getUser
+        const session = authStore.getSession();
+        if (!session) {
+          throw new Error("Please log in to remove accountability partners.");
+        }
+        const currentUserId = await sessioningAPI.getUser(session);
         const partnerToRemove = this.partners[index];
 
         if (!currentUserId) {
-          throw new Error("Please log in to remove accountability partners.");
+          throw new Error(
+            "Failed to load user information. Please log in again."
+          );
         }
 
         // Use partner's user ID (stored in userId field)
@@ -382,11 +430,19 @@ export default {
 
     async savePartnerSettings() {
       try {
-        const currentUserId = authStore.getUserId();
+        // OLD WAY (for reversion): const currentUserId = authStore.getUserId();
+        // NEW WAY: Get user ID from session using _getUser
+        const session = authStore.getSession();
+        if (!session) {
+          throw new Error("Please log in to update partner settings.");
+        }
+        const currentUserId = await sessioningAPI.getUser(session);
         const partner = this.partners[this.editForm.partnerIndex];
 
         if (!currentUserId) {
-          throw new Error("Please log in to update partner settings.");
+          throw new Error(
+            "Failed to load user information. Please log in again."
+          );
         }
 
         // Use partner's user ID (stored in userId field)

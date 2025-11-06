@@ -138,7 +138,11 @@
 </template>
 
 <script>
-import { competitionManagerAPI, passwordAuthAPI } from "../services/api";
+import {
+  competitionManagerAPI,
+  passwordAuthAPI,
+  sessioningAPI,
+} from "../services/api";
 import authStore from "../stores/authStore";
 
 export default {
@@ -243,9 +247,17 @@ export default {
       this.isLoading = true;
 
       try {
-        const currentUserId = authStore.getUserId();
-        if (!currentUserId) {
+        // OLD WAY (for reversion): const currentUserId = authStore.getUserId();
+        // NEW WAY: Get user ID from session using _getUser
+        const session = authStore.getSession();
+        if (!session) {
           throw new Error("Please log in to create competitions");
+        }
+        const currentUserId = await sessioningAPI.getUser(session);
+        if (!currentUserId) {
+          throw new Error(
+            "Failed to load user information. Please log in again."
+          );
         }
 
         // The API expects user IDs, not usernames

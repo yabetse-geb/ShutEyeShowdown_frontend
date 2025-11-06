@@ -111,6 +111,7 @@ import {
   sleepScheduleAPI,
   competitionManagerAPI,
   accountabilityAPI,
+  sessioningAPI,
 } from "../services/api";
 import authStore from "../stores/authStore";
 
@@ -174,10 +175,18 @@ export default {
       this.isLoading = true;
 
       try {
-        const userId = authStore.getUserId();
+        // OLD WAY (for reversion): const userId = authStore.getUserId();
+        // NEW WAY: Get user ID from session using _getUser
+        const session = authStore.getSession();
+        if (!session) {
+          throw new Error("Please log in to report sleep events");
+        }
+        const userId = await sessioningAPI.getUser(session);
         const username = authStore.getUsername();
         if (!userId || !username) {
-          throw new Error("Please log in to report sleep events");
+          throw new Error(
+            "Failed to load user information. Please log in again."
+          );
         }
 
         // Use the selected night date for dateStr and actual date/time for reportedTimeStr

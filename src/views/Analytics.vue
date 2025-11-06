@@ -51,7 +51,7 @@
 
 <script>
 import authStore from "../stores/authStore";
-import { sleepScheduleAPI } from "../services/api";
+import { sleepScheduleAPI, sessioningAPI } from "../services/api";
 
 export default {
   name: "Analytics",
@@ -69,7 +69,14 @@ export default {
   },
   methods: {
     async buildCurrentWeekReportFromAPI() {
-      const userId = authStore.getUserId();
+      // OLD WAY (for reversion): const userId = authStore.getUserId();
+      // NEW WAY: Get user ID from session using _getUser
+      const session = authStore.getSession();
+      if (!session) {
+        this.weekReport = [];
+        return;
+      }
+      const userId = await sessioningAPI.getUser(session);
       if (!userId) {
         this.weekReport = [];
         return;
@@ -144,9 +151,10 @@ export default {
       this.errorMessage = "";
 
       try {
-        const userId = authStore.getUserId();
-
-        if (!userId) {
+        // OLD WAY (for reversion): const userId = authStore.getUserId();
+        // NEW WAY: Get user ID from session using _getUser (called in buildCurrentWeekReportFromAPI)
+        const session = authStore.getSession();
+        if (!session) {
           throw new Error("Please log in to view analytics");
         }
 

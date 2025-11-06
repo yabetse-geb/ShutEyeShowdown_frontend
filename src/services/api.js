@@ -1,6 +1,21 @@
 import axios from "axios";
+import authStore from "../stores/authStore";
 
 const API_BASE_URL = "http://localhost:8000";
+
+// Helper function to get session from auth store
+function getSession() {
+  const session = authStore.getSession();
+  if (!session) {
+    console.error("No session found in authStore. Current auth state:", {
+      isLoggedIn: authStore.isLoggedIn(),
+      currentUser: authStore.getUser(),
+      session: authStore.getSession(),
+    });
+    throw new Error("No active session. Please log in.");
+  }
+  return session;
+}
 
 // Create axios instance with base configuration
 const apiClient = axios.create({
@@ -206,6 +221,62 @@ export const passwordAuthAPI = {
   },
 };
 
+// Sessioning API service
+export const sessioningAPI = {
+  // Delete/logout session
+  async deleteSession(session) {
+    try {
+      const response = await apiClient.post("/api/Sessioning/delete", {
+        session,
+      });
+
+      if (response.data.error) {
+        throw new Error(response.data.error);
+      }
+
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error || "Failed to delete session"
+      );
+    }
+  },
+
+  // Get user ID from session
+  async getUser(session) {
+    try {
+      console.log("sessioningAPI.getUser called with session:", session);
+      const response = await apiClient.post("/api/Sessioning/_getUser", {
+        session,
+      });
+
+      console.log("_getUser response:", response.data);
+      console.log("Response type:", typeof response.data);
+      console.log("Is array:", Array.isArray(response.data));
+      console.log(
+        "Array length:",
+        Array.isArray(response.data) ? response.data.length : "N/A"
+      );
+
+      // Success response is an array: [{ user: ID }]
+      // Error response is an empty array: []
+      if (Array.isArray(response.data) && response.data.length > 0) {
+        const userId = response.data[0].user;
+        console.log("Extracted userId:", userId);
+        return userId;
+      }
+      console.warn("_getUser returned empty array or invalid response");
+      return null; // Session not found or error
+    } catch (error) {
+      console.error("_getUser error:", error);
+      console.error("Error response:", error.response?.data);
+      console.error("Error status:", error.response?.status);
+      // On error, return null (API spec says error response is empty array)
+      return null;
+    }
+  },
+};
+
 // SleepSchedule API service
 export const sleepScheduleAPI = {
   // Add a sleep slot for a specific date
@@ -217,6 +288,7 @@ export const sleepScheduleAPI = {
     toleranceMins = 10
   ) {
     try {
+      const session = getSession();
       console.log("API: addSleepSlot called with:");
       console.log("  u:", userId);
       console.log("  bedTimeStr:", bedTimeStr);
@@ -225,11 +297,11 @@ export const sleepScheduleAPI = {
       console.log("  toleranceMins:", toleranceMins);
 
       const response = await apiClient.post("/api/SleepSchedule/addSleepSlot", {
-        u: userId,
+        session,
         bedTimeStr,
         wakeTimeStr,
-        dateStr,
         toleranceMins,
+        dateStr,
       });
 
       if (response.data.error) {
@@ -249,10 +321,11 @@ export const sleepScheduleAPI = {
   // Remove a sleep slot for a specific date
   async removeSleepSlot(userId, dateStr) {
     try {
+      const session = getSession();
       const response = await apiClient.post(
         "/api/SleepSchedule/removeSleepSlot",
         {
-          u: userId,
+          session,
           dateStr,
         }
       );
@@ -299,10 +372,12 @@ export const sleepScheduleAPI = {
   // Get all sleep slots for a user
   async getAllSleepSlots(userId) {
     try {
+      // This is an EXCLUSION (Requesting framework), so it uses session
+      const session = getSession();
       const response = await apiClient.post(
         "/api/SleepSchedule/_getAllSleepSlotsForUser",
         {
-          u: userId,
+          session,
         }
       );
 
@@ -323,10 +398,11 @@ export const sleepScheduleAPI = {
   // Report bedtime for a specific date
   async reportBedTime(userId, reportedTimeStr, dateStr) {
     try {
+      const session = getSession();
       const response = await apiClient.post(
         "/api/SleepSchedule/reportBedTime",
         {
-          u: userId,
+          session,
           reportedTimeStr,
           dateStr,
         }
@@ -349,10 +425,11 @@ export const sleepScheduleAPI = {
   // Report wake-up time for a specific date
   async reportWakeUpTime(userId, reportedTimeStr, dateStr) {
     try {
+      const session = getSession();
       const response = await apiClient.post(
         "/api/SleepSchedule/reportWakeUpTime",
         {
-          u: userId,
+          session,
           reportedTimeStr,
           dateStr,
         }
@@ -378,9 +455,11 @@ export const competitionManagerAPI = {
   // Start a new competition
   async startCompetition(name, participants, startDateStr, endDateStr) {
     try {
+      const session = getSession();
       const response = await apiClient.post(
         "/api/CompetitionManager/startCompetition",
         {
+          session,
           name,
           participants,
           startDateStr,
@@ -456,10 +535,13 @@ export const competitionManagerAPI = {
   // Get leaderboard for a competition
   async getLeaderboard(competitionId) {
     try {
+      // This is an EXCLUSION (Requesting framework), so it uses session
+      const session = getSession();
       console.log("API: Fetching leaderboard for competition:", competitionId);
       const response = await apiClient.post(
         "/api/CompetitionManager/_getLeaderboard",
         {
+          session,
           competitionId,
         }
       );
@@ -510,12 +592,13 @@ export const competitionManagerAPI = {
   // Get all competitions for a user
   async getCompetitionsForUser(userId) {
     try {
+      const session = getSession();
       console.log("API: Getting competitions for user:", userId);
 
       const response = await apiClient.post(
         "/api/CompetitionManager/_getCompetitionsForUser",
         {
-          user: userId,
+          session,
         }
       );
 
@@ -576,8 +659,9 @@ export const accountabilityAPI = {
   // Add a new accountability partner
   async addPartner(user, partner, notifyTypes, reportFrequency) {
     try {
+      const session = getSession();
       const response = await apiClient.post("/api/Accountability/addPartner", {
-        user,
+        session,
         partner,
         notifyTypes,
         reportFrequency,
@@ -598,20 +682,28 @@ export const accountabilityAPI = {
   },
 
   // Remove an accountability partner
+  // Note: user parameter is not used since this is an EXCLUSION (Requesting framework)
+  // The backend extracts the user from the session automatically
   async removePartner(user, partner) {
     try {
+      // This is an EXCLUSION (Requesting framework), so it uses session
+      // The user parameter is kept for backward compatibility but is not sent to the API
+      const session = getSession();
       const response = await apiClient.post(
         "/api/Accountability/removePartner",
         {
-          user,
+          session,
           partner,
         }
       );
 
+      // Success response from sync: { success: true }
+      // Error response: { error: string }
       if (response.data.error) {
         throw new Error(response.data.error);
       }
 
+      // Success response
       return response.data;
     } catch (error) {
       throw new Error(
@@ -623,22 +715,30 @@ export const accountabilityAPI = {
   },
 
   // Update partner preferences
+  // Note: user parameter is not used since this is an EXCLUSION (Requesting framework)
+  // The backend extracts the user from the session automatically
   async updatePreferences(user, partner, notifyTypes, reportFrequency) {
     try {
+      // This is an EXCLUSION (Requesting framework), so it uses session
+      // The user parameter is kept for backward compatibility but is not sent to the API
+      const session = getSession();
       const response = await apiClient.post(
         "/api/Accountability/updatePreferences",
         {
-          user,
+          session,
           partner,
           notifyTypes,
           reportFrequency,
         }
       );
 
+      // Success response from sync: { success: true }
+      // Error response: { error: string }
       if (response.data.error) {
         throw new Error(response.data.error);
       }
 
+      // Success response
       return response.data;
     } catch (error) {
       throw new Error(
@@ -728,24 +828,77 @@ export const accountabilityAPI = {
   },
 
   // Get partnerships for a user
+  // Note: user parameter is not used since this is an EXCLUSION (Requesting framework)
+  // The backend extracts the user from the session automatically
   async getPartnerships(user) {
     try {
+      // This is an EXCLUSION (Requesting framework), so it uses session
+      // The user parameter is kept for backward compatibility but is not sent to the API
+      const session = getSession();
       const response = await apiClient.post(
         "/api/Accountability/_getPartnerships",
         {
-          user,
+          session,
         }
       );
 
-      // Success response: [{ Partnership }] (array)
-      // Error response: [] (empty array)
+      console.log("getPartnerships response:", response.data);
+      console.log("getPartnerships response type:", typeof response.data);
+      console.log("getPartnerships is array:", Array.isArray(response.data));
+
+      // Success response from sync: { results: [{ partnership: Partnership }] }
+      // Backend returns Array<{ partnership: Partnership }>, sync wraps it in { results: ... }
+      // Error response: [] (empty array) or { error: string }
+      if (response.data.error) {
+        throw new Error(response.data.error);
+      }
+
+      // Check if response has results property (from sync)
+      if (response.data.results && Array.isArray(response.data.results)) {
+        console.log(
+          "getPartnerships: Results array, length:",
+          response.data.results.length
+        );
+        // Extract partnership objects from { partnership: Partnership } structure
+        // Backend returns Array<{ partnership: Partnership }>, so we need to extract the partnership property
+        const partnerships = response.data.results.map((item) => {
+          // If item has a partnership property, extract it
+          if (item.partnership) {
+            return item.partnership;
+          }
+          // Otherwise, item itself is the partnership (backward compatibility)
+          return item;
+        });
+        console.log(
+          "getPartnerships: Extracted partnerships, length:",
+          partnerships.length
+        );
+        return partnerships;
+      }
+
+      // Fallback: if response.data is directly an array (backward compatibility)
       if (Array.isArray(response.data)) {
-        return response.data;
+        console.log(
+          "getPartnerships: Direct array, length:",
+          response.data.length
+        );
+        // Extract partnership objects from { partnership: Partnership } structure
+        const partnerships = response.data.map((item) => {
+          if (item.partnership) {
+            return item.partnership;
+          }
+          return item;
+        });
+        return partnerships;
       }
 
       // If not an array, return empty array (error response format)
+      console.warn(
+        "getPartnerships: Response is not an array, returning empty array"
+      );
       return [];
     } catch (error) {
+      console.error("Error getting partnerships:", error);
       // On error, return empty array (API spec says error response is empty array)
       return [];
     }

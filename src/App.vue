@@ -71,11 +71,23 @@ export default {
     },
   },
   methods: {
-    logout() {
-      authStore.clearUser();
-      // Force reactivity update
-      this.authUpdateCounter++;
-      this.$router.push("/");
+    async logout() {
+      try {
+        const session = authStore.getSession();
+        if (session) {
+          // Import sessioningAPI dynamically to avoid circular dependency
+          const { sessioningAPI } = await import("./services/api");
+          await sessioningAPI.deleteSession(session);
+        }
+      } catch (error) {
+        console.error("Error deleting session on logout:", error);
+        // Continue with logout even if session deletion fails
+      } finally {
+        authStore.clearUser();
+        // Force reactivity update
+        this.authUpdateCounter++;
+        this.$router.push("/");
+      }
     },
     // Method to force reactivity update (can be called from other components)
     forceAuthUpdate() {

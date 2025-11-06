@@ -280,7 +280,11 @@
 </template>
 
 <script>
-import { competitionManagerAPI, passwordAuthAPI } from "../services/api";
+import {
+  competitionManagerAPI,
+  passwordAuthAPI,
+  sessioningAPI,
+} from "../services/api";
 import authStore from "../stores/authStore";
 
 export default {
@@ -323,9 +327,17 @@ export default {
       this.errorMessage = "";
 
       try {
-        const userId = authStore.getUserId();
-        if (!userId) {
+        // OLD WAY (for reversion): const userId = authStore.getUserId();
+        // NEW WAY: Get user ID from session using _getUser
+        const session = authStore.getSession();
+        if (!session) {
           throw new Error("Please log in to view competitions");
+        }
+        const userId = await sessioningAPI.getUser(session);
+        if (!userId) {
+          throw new Error(
+            "Failed to load user information. Please log in again."
+          );
         }
 
         const competitionsData =

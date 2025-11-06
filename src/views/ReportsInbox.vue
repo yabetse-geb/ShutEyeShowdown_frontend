@@ -61,7 +61,11 @@
 </template>
 
 <script>
-import { accountabilityAPI, passwordAuthAPI } from "../services/api";
+import {
+  accountabilityAPI,
+  passwordAuthAPI,
+  sessioningAPI,
+} from "../services/api";
 import authStore from "../stores/authStore";
 
 export default {
@@ -92,9 +96,17 @@ export default {
       this.errorMessage = "";
       this.isLoading = true;
       try {
-        const currentUserId = authStore.getUserId();
-        if (!currentUserId) {
+        // OLD WAY (for reversion): const currentUserId = authStore.getUserId();
+        // NEW WAY: Get user ID from session using _getUser
+        const session = authStore.getSession();
+        if (!session) {
           this.errorMessage = "Please log in to view your inbox.";
+          return;
+        }
+        const currentUserId = await sessioningAPI.getUser(session);
+        if (!currentUserId) {
+          this.errorMessage =
+            "Failed to load user information. Please log in again.";
           return;
         }
 
@@ -139,9 +151,17 @@ export default {
       this.reportsError = "";
       this.reportsLoading = true;
       try {
-        const currentUserId = authStore.getUserId();
-        if (!currentUserId) {
+        // OLD WAY (for reversion): const currentUserId = authStore.getUserId();
+        // NEW WAY: Get user ID from session using _getUser
+        const session = authStore.getSession();
+        if (!session) {
           this.reportsError = "Please log in to view reports.";
+          return;
+        }
+        const currentUserId = await sessioningAPI.getUser(session);
+        if (!currentUserId) {
+          this.reportsError =
+            "Failed to load user information. Please log in again.";
           return;
         }
         // Note: getAllReports endpoint may not exist in API specs

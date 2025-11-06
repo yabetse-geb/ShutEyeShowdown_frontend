@@ -56,7 +56,7 @@
 
 <script>
 import authStore from "../stores/authStore";
-import { sleepScheduleAPI } from "../services/api";
+import { sleepScheduleAPI, sessioningAPI } from "../services/api";
 
 export default {
   name: "Home",
@@ -117,8 +117,29 @@ export default {
     async loadTodaySlot() {
       try {
         this.todayError = "";
-        const userId = authStore.getUserId();
-        if (!userId) return;
+        const session = authStore.getSession();
+        if (!session) {
+          console.warn("Home: No session found");
+          return;
+        }
+
+        // Get user ID from session using _getUser
+        console.log("Home: Calling getUser with session:", session);
+        const userId = await sessioningAPI.getUser(session);
+        console.log("Home: getUser returned userId:", userId);
+        if (!userId) {
+          console.warn("Home: Failed to get user ID from session");
+          console.warn("Home: Session value:", session);
+          console.warn("Home: Auth store state:", {
+            isLoggedIn: authStore.isLoggedIn(),
+            session: authStore.getSession(),
+            currentUser: authStore.getUser(),
+          });
+          this.todayError =
+            "Failed to load user information. Please try logging in again.";
+          return;
+        }
+
         const today = new Date();
         const dateStr = today.toLocaleDateString("en-CA");
         const resp = await sleepScheduleAPI.getSleepSlot(userId, dateStr);
