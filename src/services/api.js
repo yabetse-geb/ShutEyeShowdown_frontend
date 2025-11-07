@@ -657,14 +657,13 @@ export const competitionManagerAPI = {
 // Accountability API service
 export const accountabilityAPI = {
   // Add a new accountability partner
-  async addPartner(user, partner, notifyTypes, reportFrequency) {
+  async addPartner(user, partner, notifyTypes) {
     try {
       const session = getSession();
       const response = await apiClient.post("/api/Accountability/addPartner", {
         session,
         partner,
         notifyTypes,
-        reportFrequency,
       });
 
       if (response.data.error) {
@@ -717,7 +716,7 @@ export const accountabilityAPI = {
   // Update partner preferences
   // Note: user parameter is not used since this is an EXCLUSION (Requesting framework)
   // The backend extracts the user from the session automatically
-  async updatePreferences(user, partner, notifyTypes, reportFrequency) {
+  async updatePreferences(user, partner, notifyTypes) {
     try {
       // This is an EXCLUSION (Requesting framework), so it uses session
       // The user parameter is kept for backward compatibility but is not sent to the API
@@ -728,7 +727,6 @@ export const accountabilityAPI = {
           session,
           partner,
           notifyTypes,
-          reportFrequency,
         }
       );
 

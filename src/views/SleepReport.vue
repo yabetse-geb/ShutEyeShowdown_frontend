@@ -236,29 +236,6 @@ export default {
           );
         }
 
-        // Call recordFailure for Accountability system if this was a failure
-        if (!success) {
-          try {
-            await accountabilityAPI.recordFailure(userId, dateStr, eventType);
-            console.log(
-              `Accountability failure recorded: ${eventType} failure for ${username} on ${dateStr}`
-            );
-          } catch (accountabilityError) {
-            // Don't fail the entire operation if accountability update fails
-            console.warn(
-              "Failed to record accountability failure:",
-              accountabilityError.message
-            );
-          }
-        }
-
-        // Always attempt to update reports for the user and date
-        try {
-          await accountabilityAPI.updateReports(userId, dateStr);
-        } catch (updateError) {
-          console.warn("Failed to update reports:", updateError.message);
-        }
-
         // Show success message with result
         const eventName =
           this.formData.eventType === "sleeping" ? "bedtime" : "wake-up";

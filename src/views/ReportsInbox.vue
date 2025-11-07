@@ -169,7 +169,48 @@ export default {
           currentUserId,
           seeker.user
         );
-        this.reports = Array.isArray(result) ? result : [];
+        const rawReports = Array.isArray(result) ? result : [];
+
+        // Resolve usernames for nicer display
+        const seekerUsername = seeker.username || seeker.user;
+        let viewerUsername = await passwordAuthAPI.getUsername(currentUserId);
+        if (!viewerUsername) {
+          viewerUsername = currentUserId;
+        }
+
+        const normalizeEntry = (entry) => {
+          if (!entry) {
+            return "";
+          }
+          let text = "";
+          if (typeof entry === "string") {
+            text = entry;
+          } else if (typeof entry === "object") {
+            if (entry.report) {
+              text = entry.report;
+            } else if (entry.message) {
+              text = entry.message;
+            } else {
+              text = JSON.stringify(entry);
+            }
+          } else {
+            text = String(entry);
+          }
+
+          const replacements = [
+            [String(seeker.user), seekerUsername],
+            [String(currentUserId), viewerUsername],
+          ];
+
+          return replacements.reduce((acc, [target, replacement]) => {
+            if (!target) {
+              return acc;
+            }
+            return acc.split(target).join(replacement || target);
+          }, text);
+        };
+
+        this.reports = rawReports.map(normalizeEntry);
       } catch (e) {
         this.reportsError = e.message || "Failed to load reports.";
       } finally {

@@ -41,9 +41,6 @@
           >
             <div class="partner-info">
               <span class="partner-name">{{ partner.username }}</span>
-              <span class="partner-frequency">{{
-                partner.reportFrequency
-              }}</span>
               <span class="partner-notifications">
                 Notifications: {{ partner.notifyTypes.join(", ") }}
               </span>
@@ -129,14 +126,6 @@
                 </label>
               </div>
             </div>
-            <div class="form-group">
-              <label class="form-label">Report Frequency</label>
-              <select v-model="editForm.reportFrequency" class="form-select">
-                <option value="Immediate">Immediate</option>
-                <option value="Daily">Daily</option>
-                <option value="Weekly">Weekly</option>
-              </select>
-            </div>
           </div>
           <div class="modal-footer">
             <button @click="closeEditModal" class="btn btn-secondary">
@@ -174,7 +163,6 @@ export default {
       editForm: {
         partnerIndex: -1,
         notifyTypes: [],
-        reportFrequency: "Daily",
       },
     };
   },
@@ -230,7 +218,6 @@ export default {
               return {
                 userId: partnership.partner,
                 username: username || partnership.partner,
-                reportFrequency: partnership.reportFrequency,
                 notifyTypes: partnership.notifyTypes,
                 partnershipId: partnership._id,
                 lastReportDate: partnership.lastReportDate,
@@ -239,7 +226,6 @@ export default {
               return {
                 userId: partnership.partner,
                 username: partnership.partner,
-                reportFrequency: partnership.reportFrequency,
                 notifyTypes: partnership.notifyTypes,
                 partnershipId: partnership._id,
                 lastReportDate: partnership.lastReportDate,
@@ -361,8 +347,7 @@ export default {
         await accountabilityAPI.addPartner(
           currentUserId,
           partnerUserId,
-          ["BEDTIME", "WAKETIME"], // Default notification types
-          "Daily" // Default report frequency
+          ["BEDTIME", "WAKETIME"] // Default notification types
         );
 
         const addedPartner = this.currentPartner;
@@ -423,7 +408,6 @@ export default {
       this.editForm = {
         partnerIndex: index,
         notifyTypes: [...partner.notifyTypes],
-        reportFrequency: partner.reportFrequency,
       };
       this.showEditModal = true;
     },
@@ -449,8 +433,7 @@ export default {
         await accountabilityAPI.updatePreferences(
           currentUserId,
           partner.userId || partner.username,
-          this.editForm.notifyTypes,
-          this.editForm.reportFrequency
+          this.editForm.notifyTypes
         );
 
         this.successMessage = `Partner '${partner.username}' settings updated successfully!`;
@@ -473,7 +456,6 @@ export default {
       this.editForm = {
         partnerIndex: -1,
         notifyTypes: [],
-        reportFrequency: "Daily",
       };
     },
 
@@ -602,11 +584,6 @@ export default {
   font-weight: 600;
   color: #e6eaf8;
   font-size: 1.1rem;
-}
-
-.partner-frequency {
-  color: rgba(230, 234, 248, 0.8);
-  font-size: 0.9rem;
 }
 
 .partner-notifications {
