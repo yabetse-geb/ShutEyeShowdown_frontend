@@ -1,8 +1,8 @@
 import axios from "axios";
 import authStore from "../stores/authStore";
 
-const API_BASE_URL = "http://localhost:8000";
-
+// const API_BASE_URL = "http://localhost:8000";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ||'/api';
 // Helper function to get session from auth store
 function getSession() {
   const session = authStore.getSession();
