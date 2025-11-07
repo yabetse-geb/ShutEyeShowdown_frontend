@@ -506,12 +506,41 @@ export const competitionManagerAPI = {
     }
   },
 
+  // Decrement score for a user (used when correcting previous success reports)
+  async decrementScore(dateStr, eventType) {
+    try {
+      const session = getSession();
+      const response = await apiClient.post(
+        "/api/CompetitionManager/decrementScore",
+        {
+          session,
+          dateStr,
+          eventType,
+        }
+      );
+
+      if (response.data.error) {
+        throw new Error(response.data.error);
+      }
+
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to decrement score"
+      );
+    }
+  },
+
   // End a competition
   async endCompetition(competitionId) {
     try {
+      const session = getSession();
       const response = await apiClient.post(
         "/api/CompetitionManager/endCompetition",
         {
+          session,
           competitionId,
         }
       );

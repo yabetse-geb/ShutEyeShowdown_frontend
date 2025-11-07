@@ -110,6 +110,7 @@
 import {
   sleepScheduleAPI,
   sessioningAPI,
+  competitionManagerAPI,
 } from "../services/api";
 import authStore from "../stores/authStore";
 
@@ -190,9 +191,50 @@ export default {
         const dateStr = this.formData.nightDate; // YYYY-MM-DD format - the night being reported
         const reportedTimeStr = `${this.formData.actualDate}T${this.formData.actualTime}`; // Actual sleep event time in YYYY-MM-DDTHH:MM format
 
-        let result;
+        // Step 1: Get previous sleep slot result for this date
+        const previousSleepSlot = await sleepScheduleAPI.getSleepSlot(
+          userId,
+          dateStr
+        );
+        const previousSlot =
+          Array.isArray(previousSleepSlot) && previousSleepSlot.length > 0
+            ? previousSleepSlot[0]
+            : null;
 
-        if (this.formData.eventType === "sleeping") {
+        // Step 2: Determine if previous result had success for the event type being reported
+        const isBedtimeReport = this.formData.eventType === "sleeping";
+        const previousSuccess = isBedtimeReport
+          ? previousSlot?.bedTimeSuccess === true
+          : previousSlot?.wakeUpSuccess === true;
+
+        // Step 3: Check if user is in at least one competition
+        const competitions = await competitionManagerAPI.getCompetitionsForUser(
+          userId
+        );
+        const isInCompetition =
+          Array.isArray(competitions) && competitions.length > 0;
+
+        // Step 4: If previous was success and user is in competitions, decrement score before reporting
+        // This prevents double increment (if reporting success again) or corrects score (if changing to failure)
+        if (previousSuccess && isInCompetition) {
+          const eventType = isBedtimeReport ? "BEDTIME" : "WAKETIME";
+          try {
+            await competitionManagerAPI.decrementScore(dateStr, eventType);
+            console.log(
+              `Decremented score for ${eventType} on ${dateStr} before new report`
+            );
+          } catch (decrementError) {
+            // Log but don't fail the entire operation if decrement fails
+            console.warn(
+              "Failed to decrement score before reporting:",
+              decrementError.message
+            );
+          }
+        }
+
+        // Step 5: Proceed with the normal report
+        let result;
+        if (isBedtimeReport) {
           result = await sleepScheduleAPI.reportBedTime(
             userId,
             reportedTimeStr,
@@ -210,12 +252,8 @@ export default {
         // when reportBedTime/reportWakeUpTime is executed, so no manual call needed here
 
         // Show success message with result
-        const eventName =
-          this.formData.eventType === "sleeping" ? "bedtime" : "wake-up";
-        const successKey =
-          this.formData.eventType === "sleeping"
-            ? "bedTimeSuccess"
-            : "wakeUpSuccess";
+        const eventName = isBedtimeReport ? "bedtime" : "wake-up";
+        const successKey = isBedtimeReport ? "bedTimeSuccess" : "wakeUpSuccess";
         const successStatus = result[successKey]
           ? "successfully"
           : "but missed your target";

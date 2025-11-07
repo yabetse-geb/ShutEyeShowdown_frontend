@@ -190,13 +190,13 @@
             <h3>Winners:</h3>
             <div class="winners-list">
               <span
-                v-for="(winner, index) in winners"
-                :key="winner"
+                v-for="(winner, index) in winnersWithUsernames"
+                :key="winners[index]"
                 class="winner-name"
                 :class="{ 'first-winner': index === 0 }"
               >
                 {{ winner }}
-                <span v-if="index < winners.length - 1">, </span>
+                <span v-if="index < winnersWithUsernames.length - 1">, </span>
               </span>
             </div>
           </div>
@@ -212,7 +212,9 @@
                 :style="{ height: getPodiumHeight(index) }"
               >
                 <div class="podium-position">{{ index + 1 }}</div>
-                <div class="podium-user">{{ entry.userId }}</div>
+                <div class="podium-user">
+                  {{ entry.username || entry.userId }}
+                </div>
                 <div class="podium-score">{{ entry.totalScore }}</div>
               </div>
             </div>
@@ -296,6 +298,7 @@ export default {
       selectedCompetition: null,
       leaderboard: [],
       winners: [],
+      winnerUsernames: {}, // Map of winner ID -> username
       isLoading: false,
       isEnding: false,
       errorMessage: "",
@@ -316,6 +319,13 @@ export default {
     },
     topParticipants() {
       return this.leaderboard.slice(0, Math.min(3, this.leaderboard.length));
+    },
+    winnersWithUsernames() {
+      // Map winner IDs to usernames from the winnerUsernames map
+      // Falls back to the ID if username not yet fetched
+      return this.winners.map(
+        (winnerId) => this.winnerUsernames[winnerId] || winnerId
+      );
     },
   },
   mounted() {
@@ -478,6 +488,8 @@ export default {
       if (!this.selectedCompetitionId) {
         this.selectedCompetition = null;
         this.leaderboard = [];
+        this.winners = [];
+        this.winnerUsernames = {};
         return;
       }
 
@@ -624,6 +636,25 @@ export default {
 
         // Reload leaderboard to get final scores
         await this.loadCompetitionDetails();
+
+        // Fetch usernames for all winners using the API
+        if (this.winners.length > 0) {
+          await Promise.all(
+            this.winners.map(async (winnerId) => {
+              try {
+                const username = await passwordAuthAPI.getUsername(winnerId);
+                this.winnerUsernames[winnerId] = username || winnerId;
+              } catch (error) {
+                console.warn(
+                  `Failed to fetch username for winner ${winnerId}:`,
+                  error
+                );
+                // Fallback to ID if fetch fails
+                this.winnerUsernames[winnerId] = winnerId;
+              }
+            })
+          );
+        }
 
         // Show finished modal
         this.showFinishedModal = true;
