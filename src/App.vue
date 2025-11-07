@@ -86,7 +86,7 @@ export default {
         authStore.clearUser();
         // Force reactivity update
         this.authUpdateCounter++;
-        this.$router.push("/");
+        this.$router.push("/register");
       }
     },
     // Method to force reactivity update (can be called from other components)
