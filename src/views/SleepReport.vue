@@ -109,8 +109,6 @@
 <script>
 import {
   sleepScheduleAPI,
-  competitionManagerAPI,
-  accountabilityAPI,
   sessioningAPI,
 } from "../services/api";
 import authStore from "../stores/authStore";
@@ -182,8 +180,7 @@ export default {
           throw new Error("Please log in to report sleep events");
         }
         const userId = await sessioningAPI.getUser(session);
-        const username = authStore.getUsername();
-        if (!userId || !username) {
+        if (!userId) {
           throw new Error(
             "Failed to load user information. Please log in again."
           );
@@ -194,8 +191,6 @@ export default {
         const reportedTimeStr = `${this.formData.actualDate}T${this.formData.actualTime}`; // Actual sleep event time in YYYY-MM-DDTHH:MM format
 
         let result;
-        let eventType;
-        let success;
 
         if (this.formData.eventType === "sleeping") {
           result = await sleepScheduleAPI.reportBedTime(
@@ -203,38 +198,16 @@ export default {
             reportedTimeStr,
             dateStr
           );
-          eventType = "BEDTIME";
-          success = result.bedTimeSuccess;
         } else {
           result = await sleepScheduleAPI.reportWakeUpTime(
             userId,
             reportedTimeStr,
             dateStr
           );
-          eventType = "WAKETIME";
-          success = result.wakeUpSuccess;
         }
 
-        // Call recordStat to update competition scores using user ID
-        try {
-          await competitionManagerAPI.recordStat(
-            userId,
-            dateStr,
-            eventType,
-            success
-          );
-          console.log(
-            `Competition score updated: ${eventType} ${
-              success ? "success" : "failure"
-            } for ${userId} on ${dateStr}`
-          );
-        } catch (competitionError) {
-          // Don't fail the entire operation if competition update fails
-          console.warn(
-            "Failed to update competition score:",
-            competitionError.message
-          );
-        }
+        // Note: recordStat is automatically called by syncs (UpdateCompetitionStatOnBedTime/UpdateCompetitionStatOnWakeTime)
+        // when reportBedTime/reportWakeUpTime is executed, so no manual call needed here
 
         // Show success message with result
         const eventName =

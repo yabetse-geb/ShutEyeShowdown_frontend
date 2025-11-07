@@ -347,40 +347,125 @@ export default {
         console.log("Response type:", typeof competitionsData);
         console.log("Is array:", Array.isArray(competitionsData));
 
-        // Handle different response formats
-        let competitionsArray = competitionsData;
+        // Normalize the response to a flat array of competition objects
+        const competitionsArray = Array.isArray(competitionsData)
+          ? competitionsData
+          : competitionsData && Array.isArray(competitionsData.results)
+          ? competitionsData.results
+          : competitionsData && Array.isArray(competitionsData.data)
+          ? competitionsData.data
+          : competitionsData
+          ? [competitionsData]
+          : [];
 
-        // If the response is wrapped in an array (as per API spec), use it directly
-        if (Array.isArray(competitionsData)) {
-          competitionsArray = competitionsData;
-        }
-        // If it's an object with a data property, extract it
-        else if (competitionsData && competitionsData.data) {
-          competitionsArray = competitionsData.data;
-        }
-        // If it's a single object, wrap it in an array
-        else if (competitionsData && typeof competitionsData === "object") {
-          competitionsArray = [competitionsData];
-        }
-        // If it's null or undefined, use empty array
-        else {
-          competitionsArray = [];
-        }
+        const unwrapCompetition = (input) => {
+          if (!input || typeof input !== "object") {
+            return null;
+          }
 
-        console.log("Processed competitions array:", competitionsArray);
+          const queue = [input];
+          const visited = new Set();
 
-        // Transform the API response to match our component's expected format
-        this.competitions = competitionsArray.map((comp) => ({
-          id: comp._id,
-          name: comp.name,
-          startDate: comp.startDate,
-          endDate: comp.endDate,
-          active: comp.active,
-          participants: comp.participants,
-          winners: comp.winners,
-        }));
+          while (queue.length > 0) {
+            const current = queue.shift();
+            if (!current || typeof current !== "object") {
+              continue;
+            }
+            if (visited.has(current)) {
+              continue;
+            }
+            visited.add(current);
+
+            if (
+              current._id ||
+              current.id ||
+              typeof current.name === "string" ||
+              Array.isArray(current.participants)
+            ) {
+              return current;
+            }
+
+            const values = [
+              ...Object.keys(current).map((key) => current[key]),
+              ...Object.getOwnPropertySymbols(current).map(
+                (sym) => current[sym]
+              ),
+            ];
+
+            for (const value of values) {
+              if (value && typeof value === "object") {
+                queue.push(value);
+              }
+            }
+          }
+
+          return null;
+        };
+
+        const normalizedCompetitions = competitionsArray
+          .map((item) => unwrapCompetition(item))
+          .filter((comp) => comp && (comp._id || comp.id || comp.name));
+
+        console.log("Normalized competitions array:", normalizedCompetitions);
+
+        this.competitions = normalizedCompetitions.map((comp) => {
+          const derivedId =
+            comp._id ||
+            comp.id ||
+            comp.competitionId ||
+            comp.identifier ||
+            comp.slug ||
+            comp.name;
+
+          const coerceDate = (value) => {
+            if (!value) {
+              return "";
+            }
+            if (typeof value === "string") {
+              return value;
+            }
+            if (value instanceof Date) {
+              return value.toISOString();
+            }
+            if (value && typeof value === "object" && value.isoString) {
+              return value.isoString;
+            }
+            return String(value);
+          };
+
+          return {
+            id: derivedId,
+            canonicalId:
+              comp._id ||
+              comp.id ||
+              comp.competitionId ||
+              comp.identifier ||
+              comp.slug ||
+              derivedId,
+            raw: comp,
+            name: comp.name || "Unnamed Competition",
+            startDate: coerceDate(comp.startDate),
+            endDate: coerceDate(comp.endDate),
+            active: Boolean(comp.active),
+            participants: comp.participants || [],
+            winners: comp.winners || [],
+          };
+        });
 
         console.log("Transformed competitions:", this.competitions);
+
+        const availableIds = new Set(this.competitions.map((comp) => comp.id));
+
+        if (this.competitions.length === 0) {
+          this.selectedCompetitionId = "";
+          this.selectedCompetition = null;
+          this.leaderboard = [];
+        } else if (!availableIds.has(this.selectedCompetitionId)) {
+          this.selectedCompetitionId = this.competitions[0].id;
+          await this.loadCompetitionDetails();
+        } else {
+          await this.loadCompetitionDetails();
+        }
       } catch (error) {
         this.errorMessage = error.message;
         this.competitions = [];
@@ -412,10 +497,10 @@ export default {
         // Load leaderboard
         console.log(
           "Loading leaderboard for competition:",
-          this.selectedCompetitionId
+          this.selectedCompetition.canonicalId
         );
         const leaderboardData = await competitionManagerAPI.getLeaderboard(
-          this.selectedCompetitionId
+          this.selectedCompetition.canonicalId
         );
         console.log("Leaderboard data received:", leaderboardData);
         console.log("Leaderboard data type:", typeof leaderboardData);
@@ -451,12 +536,12 @@ export default {
 
                 const [bedtimeDates, wakeupDates] = await Promise.all([
                   competitionManagerAPI.getReportedDates(
-                    this.selectedCompetitionId,
+                    this.selectedCompetition.canonicalId,
                     entry.userId,
                     "BEDTIME"
                   ),
                   competitionManagerAPI.getReportedDates(
-                    this.selectedCompetitionId,
+                    this.selectedCompetition.canonicalId,
                     entry.userId,
                     "WAKETIME"
                   ),

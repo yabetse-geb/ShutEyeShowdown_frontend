@@ -549,13 +549,26 @@ export const competitionManagerAPI = {
       console.log("API: Leaderboard response:", response.data);
       console.log("API: Response status:", response.status);
 
-      // Success response: [{ position, userId, totalScore }]
-      // Error response: [] (empty array)
-      if (Array.isArray(response.data)) {
-        return response.data;
+      const data = response.data;
+
+      if (data?.error) {
+        throw new Error(data.error);
       }
 
-      // If not an array, return empty array (error response format)
+      // New sync shape: { results: [...] }
+      if (Array.isArray(data?.results)) {
+        return data.results;
+      }
+
+      // Legacy shapes
+      if (Array.isArray(data)) {
+        return data;
+      }
+
+      if (Array.isArray(data?.leaderboard)) {
+        return data.leaderboard;
+      }
+
       return [];
     } catch (error) {
       console.error("API: Leaderboard error:", error);
@@ -604,14 +617,35 @@ export const competitionManagerAPI = {
 
       console.log("API: Raw response:", response);
       console.log("API: Response data:", response.data);
-
-      // Success response: [{ Competition objects }]
-      // Error response: [] (empty array)
-      if (Array.isArray(response.data)) {
-        return response.data;
+      if (response?.data?.results) {
+        console.log(
+          "API: Results keys sample:",
+          response.data.results.map((item) => Object.keys(item || {}))
+        );
       }
 
-      // If not an array, return empty array (error response format)
+      const data = response.data;
+
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      // Success response when sync wraps results: { results: [...] }
+      if (data && Array.isArray(data.results)) {
+        return data.results;
+      }
+
+      // Backward compatibility: handle array response directly
+      if (Array.isArray(data)) {
+        return data;
+      }
+
+      // If response nested further (e.g., { data: [...] })
+      if (data && Array.isArray(data.data)) {
+        return data.data;
+      }
+
+      // Default: empty array on unexpected format
       return [];
     } catch (error) {
       console.error("API: Error getting competitions:", error);
