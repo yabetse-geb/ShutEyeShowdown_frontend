@@ -1,0 +1,1110 @@
+[Requesting] Received request for path: /PasswordAuth/register
+Requesting.request {
+  username: 'Tommy',
+  password: 'Yab101',
+  path: '/PasswordAuth/register'
+} => { request: '019a6185-34e4-7d7f-9886-bbd69d9302e0' }
+PasswordAuth.register { username: 'Tommy', password: 'Yab101' } => { user: '019a6185-3574-7ea3-9f33-c193939360e8' }
+Requesting.respond {
+  request: '019a6185-34e4-7d7f-9886-bbd69d9302e0',
+  user: '019a6185-3574-7ea3-9f33-c193939360e8'
+} => { request: '019a6185-34e4-7d7f-9886-bbd69d9302e0' }
+[Requesting] Received request for path: /PasswordAuth/authenticate
+Requesting.request {
+  username: 'Tommy',
+  password: 'Yab101',
+  path: '/PasswordAuth/authenticate'
+} => { request: '019a6185-36d7-7191-ba5d-b7f4684c0846' }
+PasswordAuth.authenticate { username: 'Tommy', password: 'Yab101' } => { user: '019a6185-3574-7ea3-9f33-c193939360e8' }
+Sessioning.create { user: '019a6185-3574-7ea3-9f33-c193939360e8' } => { session: '019a6185-375c-7011-bf56-4231bdf2f7d7' }
+Requesting.respond {
+  request: '019a6185-36d7-7191-ba5d-b7f4684c0846',
+  session: '019a6185-375c-7011-bf56-4231bdf2f7d7'
+} => { request: '019a6185-36d7-7191-ba5d-b7f4684c0846' }
+[Requesting] Received request for path: /SleepSchedule/removeSleepSlot
+Requesting.request {
+  session: '019a6185-375c-7011-bf56-4231bdf2f7d7',
+  dateStr: '2025-11-03',
+  path: '/SleepSchedule/removeSleepSlot'
+} => { request: '019a6187-88fe-771b-a966-dbe50a713312' }
+SleepSchedule.removeSleepSlot { u: '019a6185-3574-7ea3-9f33-c193939360e8', dateStr: '2025-11-03' } => {
+  error: 'No sleep schedule found for user 019a6185-3574-7ea3-9f33-c193939360e8 on 2025-11-03 to remove.'
+}
+Requesting.respond {
+  request: '019a6187-88fe-771b-a966-dbe50a713312',
+  error: 'No sleep schedule found for user 019a6185-3574-7ea3-9f33-c193939360e8 on 2025-11-03 to remove.'
+} => { request: '019a6187-88fe-771b-a966-dbe50a713312' }
+Requesting.respond { request: '019a6187-88fe-771b-a966-dbe50a713312', success: true } => { request: '019a6187-88fe-771b-a966-dbe50a713312' }
+[Requesting] Received request for path: /SleepSchedule/addSleepSlot
+Requesting.request {
+  session: '019a6185-375c-7011-bf56-4231bdf2f7d7',
+  bedTimeStr: '2025-11-03T23:00',
+  wakeTimeStr: '2025-11-04T07:00',
+  toleranceMins: 10,
+  dateStr: '2025-11-03',
+  path: '/SleepSchedule/addSleepSlot'
+} => { request: '019a6187-8b30-7ae2-89ff-00f0560e121b' }
+SleepSchedule.addSleepSlot {
+  u: '019a6185-3574-7ea3-9f33-c193939360e8',
+  bedTimeStr: '2025-11-03T23:00',
+  wakeTimeStr: '2025-11-04T07:00',
+  toleranceMins: 10,
+  dateStr: '2025-11-03'
+} => {}
+Requesting.respond { request: '019a6187-8b30-7ae2-89ff-00f0560e121b', success: true } => { request: '019a6187-8b30-7ae2-89ff-00f0560e121b' }
+[Requesting] Received request for path: /SleepSchedule/removeSleepSlot
+Requesting.request {
+  session: '019a6185-375c-7011-bf56-4231bdf2f7d7',
+  dateStr: '2025-11-04',
+  path: '/SleepSchedule/removeSleepSlot'
+} => { request: '019a6187-8cf7-75b9-af27-73df5c4e3547' }
+SleepSchedule.removeSleepSlot { u: '019a6185-3574-7ea3-9f33-c193939360e8', dateStr: '2025-11-04' } => {
+  error: 'No sleep schedule found for user 019a6185-3574-7ea3-9f33-c193939360e8 on 2025-11-04 to remove.'
+}
+Requesting.respond {
+  request: '019a6187-8cf7-75b9-af27-73df5c4e3547',
+  error: 'No sleep schedule found for user 019a6185-3574-7ea3-9f33-c193939360e8 on 2025-11-04 to remove.'
+} => { request: '019a6187-8cf7-75b9-af27-73df5c4e3547' }
+Requesting.respond { request: '019a6187-8cf7-75b9-af27-73df5c4e3547', success: true } => { request: '019a6187-8cf7-75b9-af27-73df5c4e3547' }
+[Requesting] Received request for path: /SleepSchedule/addSleepSlot
+Requesting.request {
+  session: '019a6185-375c-7011-bf56-4231bdf2f7d7',
+  bedTimeStr: '2025-11-04T23:00',
+  wakeTimeStr: '2025-11-05T07:00',
+  toleranceMins: 10,
+  dateStr: '2025-11-04',
+  path: '/SleepSchedule/addSleepSlot'
+} => { request: '019a6187-8fad-7336-a9c4-c7ba09e56c22' }
+SleepSchedule.addSleepSlot {
+  u: '019a6185-3574-7ea3-9f33-c193939360e8',
+  bedTimeStr: '2025-11-04T23:00',
+  wakeTimeStr: '2025-11-05T07:00',
+  toleranceMins: 10,
+  dateStr: '2025-11-04'
+} => {}
+Requesting.respond { request: '019a6187-8fad-7336-a9c4-c7ba09e56c22', success: true } => { request: '019a6187-8fad-7336-a9c4-c7ba09e56c22' }
+[Requesting] Received request for path: /SleepSchedule/removeSleepSlot
+Requesting.request {
+  session: '019a6185-375c-7011-bf56-4231bdf2f7d7',
+  dateStr: '2025-11-05',
+  path: '/SleepSchedule/removeSleepSlot'
+} => { request: '019a6187-91a5-7e12-af3f-b199083f886f' }
+SleepSchedule.removeSleepSlot { u: '019a6185-3574-7ea3-9f33-c193939360e8', dateStr: '2025-11-05' } => {
+  error: 'No sleep schedule found for user 019a6185-3574-7ea3-9f33-c193939360e8 on 2025-11-05 to remove.'
+}
+Requesting.respond {
+  request: '019a6187-91a5-7e12-af3f-b199083f886f',
+  error: 'No sleep schedule found for user 019a6185-3574-7ea3-9f33-c193939360e8 on 2025-11-05 to remove.'
+} => { request: '019a6187-91a5-7e12-af3f-b199083f886f' }
+Requesting.respond { request: '019a6187-91a5-7e12-af3f-b199083f886f', success: true } => { request: '019a6187-91a5-7e12-af3f-b199083f886f' }
+[Requesting] Received request for path: /SleepSchedule/addSleepSlot
+Requesting.request {
+  session: '019a6185-375c-7011-bf56-4231bdf2f7d7',
+  bedTimeStr: '2025-11-05T23:00',
+  wakeTimeStr: '2025-11-06T07:00',
+  toleranceMins: 10,
+  dateStr: '2025-11-05',
+  path: '/SleepSchedule/addSleepSlot'
+} => { request: '019a6187-936b-7f15-a525-2fbc329e4467' }
+SleepSchedule.addSleepSlot {
+  u: '019a6185-3574-7ea3-9f33-c193939360e8',
+  bedTimeStr: '2025-11-05T23:00',
+  wakeTimeStr: '2025-11-06T07:00',
+  toleranceMins: 10,
+  dateStr: '2025-11-05'
+} => {}
+Requesting.respond { request: '019a6187-936b-7f15-a525-2fbc329e4467', success: true } => { request: '019a6187-936b-7f15-a525-2fbc329e4467' }
+[Requesting] Received request for path: /SleepSchedule/removeSleepSlot
+Requesting.request {
+  session: '019a6185-375c-7011-bf56-4231bdf2f7d7',
+  dateStr: '2025-11-06',
+  path: '/SleepSchedule/removeSleepSlot'
+} => { request: '019a6187-955a-746c-a4f0-46dfd48472cd' }
+SleepSchedule.removeSleepSlot { u: '019a6185-3574-7ea3-9f33-c193939360e8', dateStr: '2025-11-06' } => {
+  error: 'No sleep schedule found for user 019a6185-3574-7ea3-9f33-c193939360e8 on 2025-11-06 to remove.'
+}
+Requesting.respond {
+  request: '019a6187-955a-746c-a4f0-46dfd48472cd',
+  error: 'No sleep schedule found for user 019a6185-3574-7ea3-9f33-c193939360e8 on 2025-11-06 to remove.'
+} => { request: '019a6187-955a-746c-a4f0-46dfd48472cd' }
+Requesting.respond { request: '019a6187-955a-746c-a4f0-46dfd48472cd', success: true } => { request: '019a6187-955a-746c-a4f0-46dfd48472cd' }
+[Requesting] Received request for path: /SleepSchedule/addSleepSlot
+Requesting.request {
+  session: '019a6185-375c-7011-bf56-4231bdf2f7d7',
+  bedTimeStr: '2025-11-06T23:00',
+  wakeTimeStr: '2025-11-07T07:00',
+  toleranceMins: 10,
+  dateStr: '2025-11-06',
+  path: '/SleepSchedule/addSleepSlot'
+} => { request: '019a6187-971b-7f4f-8f47-ecf8e35dc657' }
+SleepSchedule.addSleepSlot {
+  u: '019a6185-3574-7ea3-9f33-c193939360e8',
+  bedTimeStr: '2025-11-06T23:00',
+  wakeTimeStr: '2025-11-07T07:00',
+  toleranceMins: 10,
+  dateStr: '2025-11-06'
+} => {}
+Requesting.respond { request: '019a6187-971b-7f4f-8f47-ecf8e35dc657', success: true } => { request: '019a6187-971b-7f4f-8f47-ecf8e35dc657' }
+[Requesting] Received request for path: /SleepSchedule/removeSleepSlot
+Requesting.request {
+  session: '019a6185-375c-7011-bf56-4231bdf2f7d7',
+  dateStr: '2025-11-07',
+  path: '/SleepSchedule/removeSleepSlot'
+} => { request: '019a6187-98f0-76bb-98ff-1621834d655b' }
+SleepSchedule.removeSleepSlot { u: '019a6185-3574-7ea3-9f33-c193939360e8', dateStr: '2025-11-07' } => {
+  error: 'No sleep schedule found for user 019a6185-3574-7ea3-9f33-c193939360e8 on 2025-11-07 to remove.'
+}
+Requesting.respond {
+  request: '019a6187-98f0-76bb-98ff-1621834d655b',
+  error: 'No sleep schedule found for user 019a6185-3574-7ea3-9f33-c193939360e8 on 2025-11-07 to remove.'
+} => { request: '019a6187-98f0-76bb-98ff-1621834d655b' }
+Requesting.respond { request: '019a6187-98f0-76bb-98ff-1621834d655b', success: true } => { request: '019a6187-98f0-76bb-98ff-1621834d655b' }
+[Requesting] Received request for path: /SleepSchedule/addSleepSlot
+Requesting.request {
+  session: '019a6185-375c-7011-bf56-4231bdf2f7d7',
+  bedTimeStr: '2025-11-07T23:00',
+  wakeTimeStr: '2025-11-08T07:00',
+  toleranceMins: 10,
+  dateStr: '2025-11-07',
+  path: '/SleepSchedule/addSleepSlot'
+} => { request: '019a6187-9aad-7d9c-bf0f-ff614327aea0' }
+SleepSchedule.addSleepSlot {
+  u: '019a6185-3574-7ea3-9f33-c193939360e8',
+  bedTimeStr: '2025-11-07T23:00',
+  wakeTimeStr: '2025-11-08T07:00',
+  toleranceMins: 10,
+  dateStr: '2025-11-07'
+} => {}
+Requesting.respond { request: '019a6187-9aad-7d9c-bf0f-ff614327aea0', success: true } => { request: '019a6187-9aad-7d9c-bf0f-ff614327aea0' }
+[Requesting] Received request for path: /SleepSchedule/removeSleepSlot
+Requesting.request {
+  session: '019a6185-375c-7011-bf56-4231bdf2f7d7',
+  dateStr: '2025-11-08',
+  path: '/SleepSchedule/removeSleepSlot'
+} => { request: '019a6187-9c74-7e60-b86b-d827ed17495e' }
+SleepSchedule.removeSleepSlot { u: '019a6185-3574-7ea3-9f33-c193939360e8', dateStr: '2025-11-08' } => {
+  error: 'No sleep schedule found for user 019a6185-3574-7ea3-9f33-c193939360e8 on 2025-11-08 to remove.'
+}
+Requesting.respond {
+  request: '019a6187-9c74-7e60-b86b-d827ed17495e',
+  error: 'No sleep schedule found for user 019a6185-3574-7ea3-9f33-c193939360e8 on 2025-11-08 to remove.'
+} => { request: '019a6187-9c74-7e60-b86b-d827ed17495e' }
+Requesting.respond { request: '019a6187-9c74-7e60-b86b-d827ed17495e', success: true } => { request: '019a6187-9c74-7e60-b86b-d827ed17495e' }
+[Requesting] Received request for path: /SleepSchedule/addSleepSlot
+Requesting.request {
+  session: '019a6185-375c-7011-bf56-4231bdf2f7d7',
+  bedTimeStr: '2025-11-08T23:00',
+  wakeTimeStr: '2025-11-09T10:00',
+  toleranceMins: 10,
+  dateStr: '2025-11-08',
+  path: '/SleepSchedule/addSleepSlot'
+} => { request: '019a6187-9e32-7ad9-aecc-e1d01ea05e2d' }
+SleepSchedule.addSleepSlot {
+  u: '019a6185-3574-7ea3-9f33-c193939360e8',
+  bedTimeStr: '2025-11-08T23:00',
+  wakeTimeStr: '2025-11-09T10:00',
+  toleranceMins: 10,
+  dateStr: '2025-11-08'
+} => {}
+Requesting.respond { request: '019a6187-9e32-7ad9-aecc-e1d01ea05e2d', success: true } => { request: '019a6187-9e32-7ad9-aecc-e1d01ea05e2d' }
+[Requesting] Received request for path: /SleepSchedule/removeSleepSlot
+Requesting.request {
+  session: '019a6185-375c-7011-bf56-4231bdf2f7d7',
+  dateStr: '2025-11-09',
+  path: '/SleepSchedule/removeSleepSlot'
+} => { request: '019a6187-a0b9-79e9-b853-b42e836c1b70' }
+SleepSchedule.removeSleepSlot { u: '019a6185-3574-7ea3-9f33-c193939360e8', dateStr: '2025-11-09' } => {
+  error: 'No sleep schedule found for user 019a6185-3574-7ea3-9f33-c193939360e8 on 2025-11-09 to remove.'
+}
+Requesting.respond {
+  request: '019a6187-a0b9-79e9-b853-b42e836c1b70',
+  error: 'No sleep schedule found for user 019a6185-3574-7ea3-9f33-c193939360e8 on 2025-11-09 to remove.'
+} => { request: '019a6187-a0b9-79e9-b853-b42e836c1b70' }
+Requesting.respond { request: '019a6187-a0b9-79e9-b853-b42e836c1b70', success: true } => { request: '019a6187-a0b9-79e9-b853-b42e836c1b70' }
+[Requesting] Received request for path: /SleepSchedule/addSleepSlot
+Requesting.request {
+  session: '019a6185-375c-7011-bf56-4231bdf2f7d7',
+  bedTimeStr: '2025-11-09T23:00',
+  wakeTimeStr: '2025-11-10T10:00',
+  toleranceMins: 10,
+  dateStr: '2025-11-09',
+  path: '/SleepSchedule/addSleepSlot'
+} => { request: '019a6187-a2db-7a59-a056-3fc68e49b519' }
+SleepSchedule.addSleepSlot {
+  u: '019a6185-3574-7ea3-9f33-c193939360e8',
+  bedTimeStr: '2025-11-09T23:00',
+  wakeTimeStr: '2025-11-10T10:00',
+  toleranceMins: 10,
+  dateStr: '2025-11-09'
+} => {}
+Requesting.respond { request: '019a6187-a2db-7a59-a056-3fc68e49b519', success: true } => { request: '019a6187-a2db-7a59-a056-3fc68e49b519' }
+[Requesting] Received request for path: /Sessioning/delete
+Requesting.request {
+  session: '019a6185-375c-7011-bf56-4231bdf2f7d7',
+  path: '/Sessioning/delete'
+} => { request: '019a6187-af14-713e-94c3-dc2c62bd5800' }
+Sessioning.delete { session: '019a6185-375c-7011-bf56-4231bdf2f7d7' } => {}
+Requesting.respond {
+  request: '019a6187-af14-713e-94c3-dc2c62bd5800',
+  status: 'logged_out'
+} => { request: '019a6187-af14-713e-94c3-dc2c62bd5800' }
+[Requesting] Received request for path: /PasswordAuth/register
+Requesting.request {
+  username: 'Timothy',
+  password: 'Yab101',
+  path: '/PasswordAuth/register'
+} => { request: '019a6188-04e3-7147-9faf-99ed09ee0f5c' }
+PasswordAuth.register { username: 'Timothy', password: 'Yab101' } => { user: '019a6188-0568-7c6a-a6e7-cf04bb9d67a1' }
+Requesting.respond {
+  request: '019a6188-04e3-7147-9faf-99ed09ee0f5c',
+  user: '019a6188-0568-7c6a-a6e7-cf04bb9d67a1'
+} => { request: '019a6188-04e3-7147-9faf-99ed09ee0f5c' }
+[Requesting] Received request for path: /PasswordAuth/authenticate
+Requesting.request {
+  username: 'Timothy',
+  password: 'Yab101',
+  path: '/PasswordAuth/authenticate'
+} => { request: '019a6188-06c9-76c1-b630-d99ffcda27da' }
+PasswordAuth.authenticate { username: 'Timothy', password: 'Yab101' } => { user: '019a6188-0568-7c6a-a6e7-cf04bb9d67a1' }
+Sessioning.create { user: '019a6188-0568-7c6a-a6e7-cf04bb9d67a1' } => { session: '019a6188-074e-76cc-bf41-4155a997bab1' }
+Requesting.respond {
+  request: '019a6188-06c9-76c1-b630-d99ffcda27da',
+  session: '019a6188-074e-76cc-bf41-4155a997bab1'
+} => { request: '019a6188-06c9-76c1-b630-d99ffcda27da' }
+[Requesting] Received request for path: /Accountability/_getPartnerships
+Requesting.request {
+  session: '019a6188-074e-76cc-bf41-4155a997bab1',
+  path: '/Accountability/_getPartnerships'
+} => { request: '019a6188-23a3-7be5-bd58-a9e031ade763' }
+[GetMyPartnershipsRequest] Result frames: Frames(0) []
+Requesting.respond { request: '019a6188-23a3-7be5-bd58-a9e031ade763', results: [] } => { request: '019a6188-23a3-7be5-bd58-a9e031ade763' }
+[Requesting] Received request for path: /CompetitionManager/_getCompetitionsForUser
+Requesting.request {
+  session: '019a6188-074e-76cc-bf41-4155a997bab1',
+  path: '/CompetitionManager/_getCompetitionsForUser'
+} => { request: '019a6188-2512-7601-80b6-7cb12149ee28' }
+[GetMyCompetitionsRequest] Received request. session: 019a6188-074e-76cc-bf41-4155a997bab1 request: 019a6188-2512-7601-80b6-7cb12149ee28
+[GetMyCompetitionsRequest] Initial frames: Frames(1) [
+  {
+    [Symbol(flow)]: "42ac7a72-f329-449a-963b-86fb6d01b3ed",
+    [Symbol(session)]: "019a6188-074e-76cc-bf41-4155a997bab1",
+    [Symbol(request)]: "019a6188-2512-7601-80b6-7cb12149ee28",
+    [Symbol(action_0)]: "b328ba42-1a47-4db7-a304-cb7d6e6ccb3f"
+  }
+]
+[GetMyCompetitionsRequest] After _getUser, frames: Frames(1) [
+  {
+    [Symbol(flow)]: "42ac7a72-f329-449a-963b-86fb6d01b3ed",
+    [Symbol(session)]: "019a6188-074e-76cc-bf41-4155a997bab1",
+    [Symbol(request)]: "019a6188-2512-7601-80b6-7cb12149ee28",
+    [Symbol(action_0)]: "b328ba42-1a47-4db7-a304-cb7d6e6ccb3f",
+    [Symbol(user)]: "019a6188-0568-7c6a-a6e7-cf04bb9d67a1"
+  }
+]
+[GetMyCompetitionsRequest] Bound user: 019a6188-0568-7c6a-a6e7-cf04bb9d67a1
+[_getCompetitionsForUser] input user: 019a6188-0568-7c6a-a6e7-cf04bb9d67a1
+[_getCompetitionsForUser] found competitions: 0
+[GetMyCompetitionsRequest] resultFrames (per competition): Frames(0) []
+[GetMyCompetitionsRequest] No competitions found. Returning empty results.
+Requesting.respond { request: '019a6188-2512-7601-80b6-7cb12149ee28', results: [] } => { request: '019a6188-2512-7601-80b6-7cb12149ee28' }
+[Requesting] Received request for path: /SleepSchedule/removeSleepSlot
+Requesting.request {
+  session: '019a6188-074e-76cc-bf41-4155a997bab1',
+  dateStr: '2025-11-03',
+  path: '/SleepSchedule/removeSleepSlot'
+} => { request: '019a618a-c0b1-7053-b931-e0ffbcf361d1' }
+SleepSchedule.removeSleepSlot { u: '019a6188-0568-7c6a-a6e7-cf04bb9d67a1', dateStr: '2025-11-03' } => {
+  error: 'No sleep schedule found for user 019a6188-0568-7c6a-a6e7-cf04bb9d67a1 on 2025-11-03 to remove.'
+}
+Requesting.respond {
+  request: '019a618a-c0b1-7053-b931-e0ffbcf361d1',
+  error: 'No sleep schedule found for user 019a6188-0568-7c6a-a6e7-cf04bb9d67a1 on 2025-11-03 to remove.'
+} => { request: '019a618a-c0b1-7053-b931-e0ffbcf361d1' }
+Requesting.respond { request: '019a618a-c0b1-7053-b931-e0ffbcf361d1', success: true } => { request: '019a618a-c0b1-7053-b931-e0ffbcf361d1' }
+[Requesting] Received request for path: /SleepSchedule/addSleepSlot
+Requesting.request {
+  session: '019a6188-074e-76cc-bf41-4155a997bab1',
+  bedTimeStr: '2025-11-03T23:00',
+  wakeTimeStr: '2025-11-04T07:00',
+  toleranceMins: 10,
+  dateStr: '2025-11-03',
+  path: '/SleepSchedule/addSleepSlot'
+} => { request: '019a618a-c2f5-7b55-8f34-1189e14f38e3' }
+SleepSchedule.addSleepSlot {
+  u: '019a6188-0568-7c6a-a6e7-cf04bb9d67a1',
+  bedTimeStr: '2025-11-03T23:00',
+  wakeTimeStr: '2025-11-04T07:00',
+  toleranceMins: 10,
+  dateStr: '2025-11-03'
+} => {}
+Requesting.respond { request: '019a618a-c2f5-7b55-8f34-1189e14f38e3', success: true } => { request: '019a618a-c2f5-7b55-8f34-1189e14f38e3' }
+[Requesting] Received request for path: /SleepSchedule/removeSleepSlot
+Requesting.request {
+  session: '019a6188-074e-76cc-bf41-4155a997bab1',
+  dateStr: '2025-11-04',
+  path: '/SleepSchedule/removeSleepSlot'
+} => { request: '019a618a-c4ad-7fb2-9867-ce386f2b76a4' }
+SleepSchedule.removeSleepSlot { u: '019a6188-0568-7c6a-a6e7-cf04bb9d67a1', dateStr: '2025-11-04' } => {
+  error: 'No sleep schedule found for user 019a6188-0568-7c6a-a6e7-cf04bb9d67a1 on 2025-11-04 to remove.'
+}
+Requesting.respond {
+  request: '019a618a-c4ad-7fb2-9867-ce386f2b76a4',
+  error: 'No sleep schedule found for user 019a6188-0568-7c6a-a6e7-cf04bb9d67a1 on 2025-11-04 to remove.'
+} => { request: '019a618a-c4ad-7fb2-9867-ce386f2b76a4' }
+Requesting.respond { request: '019a618a-c4ad-7fb2-9867-ce386f2b76a4', success: true } => { request: '019a618a-c4ad-7fb2-9867-ce386f2b76a4' }
+[Requesting] Received request for path: /SleepSchedule/addSleepSlot
+Requesting.request {
+  session: '019a6188-074e-76cc-bf41-4155a997bab1',
+  bedTimeStr: '2025-11-04T23:00',
+  wakeTimeStr: '2025-11-05T07:00',
+  toleranceMins: 10,
+  dateStr: '2025-11-04',
+  path: '/SleepSchedule/addSleepSlot'
+} => { request: '019a618a-c683-73d0-8ae6-6a516aae7e6c' }
+SleepSchedule.addSleepSlot {
+  u: '019a6188-0568-7c6a-a6e7-cf04bb9d67a1',
+  bedTimeStr: '2025-11-04T23:00',
+  wakeTimeStr: '2025-11-05T07:00',
+  toleranceMins: 10,
+  dateStr: '2025-11-04'
+} => {}
+Requesting.respond { request: '019a618a-c683-73d0-8ae6-6a516aae7e6c', success: true } => { request: '019a618a-c683-73d0-8ae6-6a516aae7e6c' }
+[Requesting] Received request for path: /SleepSchedule/removeSleepSlot
+Requesting.request {
+  session: '019a6188-074e-76cc-bf41-4155a997bab1',
+  dateStr: '2025-11-05',
+  path: '/SleepSchedule/removeSleepSlot'
+} => { request: '019a618a-c842-70f5-bbf7-f203213484ba' }
+SleepSchedule.removeSleepSlot { u: '019a6188-0568-7c6a-a6e7-cf04bb9d67a1', dateStr: '2025-11-05' } => {
+  error: 'No sleep schedule found for user 019a6188-0568-7c6a-a6e7-cf04bb9d67a1 on 2025-11-05 to remove.'
+}
+Requesting.respond {
+  request: '019a618a-c842-70f5-bbf7-f203213484ba',
+  error: 'No sleep schedule found for user 019a6188-0568-7c6a-a6e7-cf04bb9d67a1 on 2025-11-05 to remove.'
+} => { request: '019a618a-c842-70f5-bbf7-f203213484ba' }
+Requesting.respond { request: '019a618a-c842-70f5-bbf7-f203213484ba', success: true } => { request: '019a618a-c842-70f5-bbf7-f203213484ba' }
+[Requesting] Received request for path: /SleepSchedule/addSleepSlot
+Requesting.request {
+  session: '019a6188-074e-76cc-bf41-4155a997bab1',
+  bedTimeStr: '2025-11-05T23:00',
+  wakeTimeStr: '2025-11-06T07:00',
+  toleranceMins: 10,
+  dateStr: '2025-11-05',
+  path: '/SleepSchedule/addSleepSlot'
+} => { request: '019a618a-ca18-73d4-b237-b039a82c9605' }
+SleepSchedule.addSleepSlot {
+  u: '019a6188-0568-7c6a-a6e7-cf04bb9d67a1',
+  bedTimeStr: '2025-11-05T23:00',
+  wakeTimeStr: '2025-11-06T07:00',
+  toleranceMins: 10,
+  dateStr: '2025-11-05'
+} => {}
+Requesting.respond { request: '019a618a-ca18-73d4-b237-b039a82c9605', success: true } => { request: '019a618a-ca18-73d4-b237-b039a82c9605' }
+[Requesting] Received request for path: /SleepSchedule/removeSleepSlot
+Requesting.request {
+  session: '019a6188-074e-76cc-bf41-4155a997bab1',
+  dateStr: '2025-11-06',
+  path: '/SleepSchedule/removeSleepSlot'
+} => { request: '019a618a-cbf2-7158-ac57-9c249a67033f' }
+SleepSchedule.removeSleepSlot { u: '019a6188-0568-7c6a-a6e7-cf04bb9d67a1', dateStr: '2025-11-06' } => {
+  error: 'No sleep schedule found for user 019a6188-0568-7c6a-a6e7-cf04bb9d67a1 on 2025-11-06 to remove.'
+}
+Requesting.respond {
+  request: '019a618a-cbf2-7158-ac57-9c249a67033f',
+  error: 'No sleep schedule found for user 019a6188-0568-7c6a-a6e7-cf04bb9d67a1 on 2025-11-06 to remove.'
+} => { request: '019a618a-cbf2-7158-ac57-9c249a67033f' }
+Requesting.respond { request: '019a618a-cbf2-7158-ac57-9c249a67033f', success: true } => { request: '019a618a-cbf2-7158-ac57-9c249a67033f' }
+[Requesting] Received request for path: /SleepSchedule/addSleepSlot
+Requesting.request {
+  session: '019a6188-074e-76cc-bf41-4155a997bab1',
+  bedTimeStr: '2025-11-06T23:00',
+  wakeTimeStr: '2025-11-07T07:00',
+  toleranceMins: 10,
+  dateStr: '2025-11-06',
+  path: '/SleepSchedule/addSleepSlot'
+} => { request: '019a618a-cdbd-794e-bf49-7674399dcf07' }
+SleepSchedule.addSleepSlot {
+  u: '019a6188-0568-7c6a-a6e7-cf04bb9d67a1',
+  bedTimeStr: '2025-11-06T23:00',
+  wakeTimeStr: '2025-11-07T07:00',
+  toleranceMins: 10,
+  dateStr: '2025-11-06'
+} => {}
+Requesting.respond { request: '019a618a-cdbd-794e-bf49-7674399dcf07', success: true } => { request: '019a618a-cdbd-794e-bf49-7674399dcf07' }
+[Requesting] Received request for path: /SleepSchedule/removeSleepSlot
+Requesting.request {
+  session: '019a6188-074e-76cc-bf41-4155a997bab1',
+  dateStr: '2025-11-07',
+  path: '/SleepSchedule/removeSleepSlot'
+} => { request: '019a618a-cfab-7948-9714-d77766a3dde5' }
+SleepSchedule.removeSleepSlot { u: '019a6188-0568-7c6a-a6e7-cf04bb9d67a1', dateStr: '2025-11-07' } => {
+  error: 'No sleep schedule found for user 019a6188-0568-7c6a-a6e7-cf04bb9d67a1 on 2025-11-07 to remove.'
+}
+Requesting.respond {
+  request: '019a618a-cfab-7948-9714-d77766a3dde5',
+  error: 'No sleep schedule found for user 019a6188-0568-7c6a-a6e7-cf04bb9d67a1 on 2025-11-07 to remove.'
+} => { request: '019a618a-cfab-7948-9714-d77766a3dde5' }
+Requesting.respond { request: '019a618a-cfab-7948-9714-d77766a3dde5', success: true } => { request: '019a618a-cfab-7948-9714-d77766a3dde5' }
+[Requesting] Received request for path: /SleepSchedule/addSleepSlot
+Requesting.request {
+  session: '019a6188-074e-76cc-bf41-4155a997bab1',
+  bedTimeStr: '2025-11-07T23:00',
+  wakeTimeStr: '2025-11-08T07:00',
+  toleranceMins: 10,
+  dateStr: '2025-11-07',
+  path: '/SleepSchedule/addSleepSlot'
+} => { request: '019a618a-d175-7608-b310-e0687b1b6d59' }
+SleepSchedule.addSleepSlot {
+  u: '019a6188-0568-7c6a-a6e7-cf04bb9d67a1',
+  bedTimeStr: '2025-11-07T23:00',
+  wakeTimeStr: '2025-11-08T07:00',
+  toleranceMins: 10,
+  dateStr: '2025-11-07'
+} => {}
+Requesting.respond { request: '019a618a-d175-7608-b310-e0687b1b6d59', success: true } => { request: '019a618a-d175-7608-b310-e0687b1b6d59' }
+[Requesting] Received request for path: /SleepSchedule/removeSleepSlot
+Requesting.request {
+  session: '019a6188-074e-76cc-bf41-4155a997bab1',
+  dateStr: '2025-11-08',
+  path: '/SleepSchedule/removeSleepSlot'
+} => { request: '019a618a-d34a-7113-a3a0-40b50f35db33' }
+SleepSchedule.removeSleepSlot { u: '019a6188-0568-7c6a-a6e7-cf04bb9d67a1', dateStr: '2025-11-08' } => {
+  error: 'No sleep schedule found for user 019a6188-0568-7c6a-a6e7-cf04bb9d67a1 on 2025-11-08 to remove.'
+}
+Requesting.respond {
+  request: '019a618a-d34a-7113-a3a0-40b50f35db33',
+  error: 'No sleep schedule found for user 019a6188-0568-7c6a-a6e7-cf04bb9d67a1 on 2025-11-08 to remove.'
+} => { request: '019a618a-d34a-7113-a3a0-40b50f35db33' }
+Requesting.respond { request: '019a618a-d34a-7113-a3a0-40b50f35db33', success: true } => { request: '019a618a-d34a-7113-a3a0-40b50f35db33' }
+[Requesting] Received request for path: /SleepSchedule/addSleepSlot
+Requesting.request {
+  session: '019a6188-074e-76cc-bf41-4155a997bab1',
+  bedTimeStr: '2025-11-08T23:00',
+  wakeTimeStr: '2025-11-09T10:00',
+  toleranceMins: 10,
+  dateStr: '2025-11-08',
+  path: '/SleepSchedule/addSleepSlot'
+} => { request: '019a618a-d520-7413-afed-21f5c3aabf92' }
+SleepSchedule.addSleepSlot {
+  u: '019a6188-0568-7c6a-a6e7-cf04bb9d67a1',
+  bedTimeStr: '2025-11-08T23:00',
+  wakeTimeStr: '2025-11-09T10:00',
+  toleranceMins: 10,
+  dateStr: '2025-11-08'
+} => {}
+Requesting.respond { request: '019a618a-d520-7413-afed-21f5c3aabf92', success: true } => { request: '019a618a-d520-7413-afed-21f5c3aabf92' }
+[Requesting] Received request for path: /SleepSchedule/removeSleepSlot
+Requesting.request {
+  session: '019a6188-074e-76cc-bf41-4155a997bab1',
+  dateStr: '2025-11-09',
+  path: '/SleepSchedule/removeSleepSlot'
+} => { request: '019a618a-d761-7c74-8de9-0f3a221e3046' }
+SleepSchedule.removeSleepSlot { u: '019a6188-0568-7c6a-a6e7-cf04bb9d67a1', dateStr: '2025-11-09' } => {
+  error: 'No sleep schedule found for user 019a6188-0568-7c6a-a6e7-cf04bb9d67a1 on 2025-11-09 to remove.'
+}
+Requesting.respond {
+  request: '019a618a-d761-7c74-8de9-0f3a221e3046',
+  error: 'No sleep schedule found for user 019a6188-0568-7c6a-a6e7-cf04bb9d67a1 on 2025-11-09 to remove.'
+} => { request: '019a618a-d761-7c74-8de9-0f3a221e3046' }
+Requesting.respond { request: '019a618a-d761-7c74-8de9-0f3a221e3046', success: true } => { request: '019a618a-d761-7c74-8de9-0f3a221e3046' }
+[Requesting] Received request for path: /SleepSchedule/addSleepSlot
+Requesting.request {
+  session: '019a6188-074e-76cc-bf41-4155a997bab1',
+  bedTimeStr: '2025-11-09T23:00',
+  wakeTimeStr: '2025-11-10T10:00',
+  toleranceMins: 10,
+  dateStr: '2025-11-09',
+  path: '/SleepSchedule/addSleepSlot'
+} => { request: '019a618a-d9a4-7d6d-9162-9a77a8beadc1' }
+SleepSchedule.addSleepSlot {
+  u: '019a6188-0568-7c6a-a6e7-cf04bb9d67a1',
+  bedTimeStr: '2025-11-09T23:00',
+  wakeTimeStr: '2025-11-10T10:00',
+  toleranceMins: 10,
+  dateStr: '2025-11-09'
+} => {}
+Requesting.respond { request: '019a618a-d9a4-7d6d-9162-9a77a8beadc1', success: true } => { request: '019a618a-d9a4-7d6d-9162-9a77a8beadc1' }
+[Requesting] Received request for path: /Sessioning/delete
+Requesting.request {
+  session: '019a6188-074e-76cc-bf41-4155a997bab1',
+  path: '/Sessioning/delete'
+} => { request: '019a618a-e855-79a6-9534-f4085e29c6a9' }
+Sessioning.delete { session: '019a6188-074e-76cc-bf41-4155a997bab1' } => {}
+Requesting.respond {
+  request: '019a618a-e855-79a6-9534-f4085e29c6a9',
+  status: 'logged_out'
+} => { request: '019a618a-e855-79a6-9534-f4085e29c6a9' }
+[Requesting] Received request for path: /PasswordAuth/authenticate
+Requesting.request {
+  username: 'Tommy',
+  password: 'Yab101',
+  path: '/PasswordAuth/authenticate'
+} => { request: '019a618b-211a-7911-a82d-a67462a244ec' }
+PasswordAuth.authenticate { username: 'Tommy', password: 'Yab101' } => { user: '019a6185-3574-7ea3-9f33-c193939360e8' }
+Sessioning.create { user: '019a6185-3574-7ea3-9f33-c193939360e8' } => { session: '019a618b-21a2-767f-a1e4-81f1dd796260' }
+Requesting.respond {
+  request: '019a618b-211a-7911-a82d-a67462a244ec',
+  session: '019a618b-21a2-767f-a1e4-81f1dd796260'
+} => { request: '019a618b-211a-7911-a82d-a67462a244ec' }
+[Requesting] Received request for path: /CompetitionManager/startCompetition
+Requesting.request {
+  session: '019a618b-21a2-767f-a1e4-81f1dd796260',
+  name: 'Competition',
+  participants: [
+    '019a6185-3574-7ea3-9f33-c193939360e8',
+    '019a6188-0568-7c6a-a6e7-cf04bb9d67a1'
+  ],
+  startDateStr: '2025-11-03',
+  endDateStr: '2025-11-07',
+  path: '/CompetitionManager/startCompetition'
+} => { request: '019a6190-cf5f-71a3-ba2f-6f398e1f74b9' }
+CompetitionManager.startCompetition {
+  name: 'Competition',
+  participants: [
+    '019a6185-3574-7ea3-9f33-c193939360e8',
+    '019a6188-0568-7c6a-a6e7-cf04bb9d67a1'
+  ],
+  startDateStr: '2025-11-03',
+  endDateStr: '2025-11-07'
+} => { competitionId: '019a6190-cff4-7c05-8190-ffad2c15055f' }
+Requesting.respond {
+  request: '019a6190-cf5f-71a3-ba2f-6f398e1f74b9',
+  competitionId: '019a6190-cff4-7c05-8190-ffad2c15055f'
+} => { request: '019a6190-cf5f-71a3-ba2f-6f398e1f74b9' }
+[Requesting] Received request for path: /CompetitionManager/_getCompetitionsForUser
+Requesting.request {
+  session: '019a618b-21a2-767f-a1e4-81f1dd796260',
+  path: '/CompetitionManager/_getCompetitionsForUser'
+} => { request: '019a6190-d842-7bdd-a4b0-28309e294479' }
+[GetMyCompetitionsRequest] Received request. session: 019a618b-21a2-767f-a1e4-81f1dd796260 request: 019a6190-d842-7bdd-a4b0-28309e294479
+[GetMyCompetitionsRequest] Initial frames: Frames(1) [
+  {
+    [Symbol(flow)]: "0859471c-a730-414e-9675-04b871039e8f",
+    [Symbol(session)]: "019a618b-21a2-767f-a1e4-81f1dd796260",
+    [Symbol(request)]: "019a6190-d842-7bdd-a4b0-28309e294479",
+    [Symbol(action_0)]: "2b94b72b-9ebe-4951-a75c-97722c46ccd8"
+  }
+]
+[GetMyCompetitionsRequest] After _getUser, frames: Frames(1) [
+  {
+    [Symbol(flow)]: "0859471c-a730-414e-9675-04b871039e8f",
+    [Symbol(session)]: "019a618b-21a2-767f-a1e4-81f1dd796260",
+    [Symbol(request)]: "019a6190-d842-7bdd-a4b0-28309e294479",
+    [Symbol(action_0)]: "2b94b72b-9ebe-4951-a75c-97722c46ccd8",
+    [Symbol(user)]: "019a6185-3574-7ea3-9f33-c193939360e8"
+  }
+]
+[GetMyCompetitionsRequest] Bound user: 019a6185-3574-7ea3-9f33-c193939360e8
+[_getCompetitionsForUser] input user: 019a6185-3574-7ea3-9f33-c193939360e8
+[_getCompetitionsForUser] found competitions: 1
+[_getCompetitionsForUser] sample competition: {
+  _id: "019a6190-cff4-7c05-8190-ffad2c15055f",
+  name: "Competition",
+  participants: [
+    "019a6185-3574-7ea3-9f33-c193939360e8",
+    "019a6188-0568-7c6a-a6e7-cf04bb9d67a1"
+  ],
+  startDate: 2025-11-03T00:00:00.000Z,
+  endDate: 2025-11-07T00:00:00.000Z,
+  active: true,
+  winners: null
+}
+[GetMyCompetitionsRequest] resultFrames (per competition): Frames(1) [
+  {
+    [Symbol(flow)]: "0859471c-a730-414e-9675-04b871039e8f",
+    [Symbol(session)]: "019a618b-21a2-767f-a1e4-81f1dd796260",
+    [Symbol(request)]: "019a6190-d842-7bdd-a4b0-28309e294479",
+    [Symbol(action_0)]: "2b94b72b-9ebe-4951-a75c-97722c46ccd8",
+    [Symbol(user)]: "019a6185-3574-7ea3-9f33-c193939360e8",
+    [Symbol(competition)]: {
+      _id: "019a6190-cff4-7c05-8190-ffad2c15055f",
+      name: "Competition",
+      participants: [
+        "019a6185-3574-7ea3-9f33-c193939360e8",
+        "019a6188-0568-7c6a-a6e7-cf04bb9d67a1"
+      ],
+      startDate: 2025-11-03T00:00:00.000Z,
+      endDate: 2025-11-07T00:00:00.000Z,
+      active: true,
+      winners: null
+    }
+  }
+]
+[GetMyCompetitionsRequest] Collected results: Frames(1) [
+  {
+    [Symbol(flow)]: "0859471c-a730-414e-9675-04b871039e8f",
+    [Symbol(session)]: "019a618b-21a2-767f-a1e4-81f1dd796260",
+    [Symbol(request)]: "019a6190-d842-7bdd-a4b0-28309e294479",
+    [Symbol(action_0)]: "2b94b72b-9ebe-4951-a75c-97722c46ccd8",
+    [Symbol(user)]: "019a6185-3574-7ea3-9f33-c193939360e8",
+    [Symbol(results)]: [
+      {
+        competition: {
+          _id: "019a6190-cff4-7c05-8190-ffad2c15055f",
+          name: "Competition",
+          participants: [Array],
+          startDate: 2025-11-03T00:00:00.000Z,
+          endDate: 2025-11-07T00:00:00.000Z,
+          active: true,
+          winners: null
+        }
+      }
+    ]
+  }
+]
+Requesting.respond {
+  request: '019a6190-d842-7bdd-a4b0-28309e294479',
+  results: [ { competition: [Object] } ]
+} => { request: '019a6190-d842-7bdd-a4b0-28309e294479' }
+[Requesting] Received request for path: /CompetitionManager/_getLeaderboard
+Requesting.request {
+  session: '019a618b-21a2-767f-a1e4-81f1dd796260',
+  competitionId: '019a6190-cff4-7c05-8190-ffad2c15055f',
+  path: '/CompetitionManager/_getLeaderboard'
+} => { request: '019a6190-da44-77d1-a6bf-3678aa474110' }
+[GetLeaderboardRequest] Collected results: Frames(1) [
+  {
+    [Symbol(flow)]: "ddaf73d9-3cd5-47cf-b75c-3df6796b745a",
+    [Symbol(session)]: "019a618b-21a2-767f-a1e4-81f1dd796260",
+    [Symbol(competitionId)]: "019a6190-cff4-7c05-8190-ffad2c15055f",
+    [Symbol(request)]: "019a6190-da44-77d1-a6bf-3678aa474110",
+    [Symbol(action_0)]: "9d28bad9-b6de-416a-a8d1-0ad0533349f2",
+    [Symbol(results)]: [
+      {
+        entry: {
+          position: 1,
+          userId: "019a6185-3574-7ea3-9f33-c193939360e8",
+          totalScore: 0
+        }
+      },
+      {
+        entry: {
+          position: 1,
+          userId: "019a6188-0568-7c6a-a6e7-cf04bb9d67a1",
+          totalScore: 0
+        }
+      }
+    ]
+  }
+]
+Requesting.respond {
+  request: '019a6190-da44-77d1-a6bf-3678aa474110',
+  results: [
+    {
+      position: 1,
+      userId: '019a6185-3574-7ea3-9f33-c193939360e8',
+      totalScore: 0
+    },
+    {
+      position: 1,
+      userId: '019a6188-0568-7c6a-a6e7-cf04bb9d67a1',
+      totalScore: 0
+    }
+  ]
+} => { request: '019a6190-da44-77d1-a6bf-3678aa474110' }
+[Requesting] Received request for path: /Accountability/_getPartnerships
+Requesting.request {
+  session: '019a618b-21a2-767f-a1e4-81f1dd796260',
+  path: '/Accountability/_getPartnerships'
+} => { request: '019a6190-eb2c-737f-92e9-e821840da5c5' }
+[GetMyPartnershipsRequest] Result frames: Frames(0) []
+Requesting.respond { request: '019a6190-eb2c-737f-92e9-e821840da5c5', results: [] } => { request: '019a6190-eb2c-737f-92e9-e821840da5c5' }
+[Requesting] Received request for path: /Accountability/addPartner
+Requesting.request {
+  session: '019a618b-21a2-767f-a1e4-81f1dd796260',
+  partner: '019a6188-0568-7c6a-a6e7-cf04bb9d67a1',
+  notifyTypes: [ 'BEDTIME', 'WAKETIME' ],
+  path: '/Accountability/addPartner'
+} => { request: '019a6190-fb1f-703a-8f82-629055ea68db' }
+Accountability.addPartner {
+  user: '019a6185-3574-7ea3-9f33-c193939360e8',
+  partner: '019a6188-0568-7c6a-a6e7-cf04bb9d67a1',
+  notifyTypes: [ 'BEDTIME', 'WAKETIME' ]
+} => {}
+Requesting.respond { request: '019a6190-fb1f-703a-8f82-629055ea68db', success: true } => { request: '019a6190-fb1f-703a-8f82-629055ea68db' }
+[Requesting] Received request for path: /Accountability/_getPartnerships
+Requesting.request {
+  session: '019a618b-21a2-767f-a1e4-81f1dd796260',
+  path: '/Accountability/_getPartnerships'
+} => { request: '019a6190-fde6-765f-b157-ad074dfc58b1' }
+[GetMyPartnershipsRequest] Result frames: Frames(1) [
+  {
+    [Symbol(flow)]: "f826b2b8-a2c8-41aa-998f-12060c2e701c",
+    [Symbol(session)]: "019a618b-21a2-767f-a1e4-81f1dd796260",
+    [Symbol(request)]: "019a6190-fde6-765f-b157-ad074dfc58b1",
+    [Symbol(action_0)]: "715bf238-a2c5-449b-aa2a-be7583f06d18",
+    [Symbol(user)]: "019a6185-3574-7ea3-9f33-c193939360e8",
+    [Symbol(partnership)]: {
+      _id: "019a6190-fbeb-79e5-be02-6b2e7abc31d2",
+      user: "019a6185-3574-7ea3-9f33-c193939360e8",
+      partner: "019a6188-0568-7c6a-a6e7-cf04bb9d67a1",
+      notifyTypes: [ "BEDTIME", "WAKETIME" ],
+      lastReportDate: null
+    }
+  }
+]
+Requesting.respond {
+  request: '019a6190-fde6-765f-b157-ad074dfc58b1',
+  results: [ { partnership: [Object] } ]
+} => { request: '019a6190-fde6-765f-b157-ad074dfc58b1' }
+[Requesting] Received request for path: /Accountability/updatePreferences
+Requesting.request {
+  session: '019a618b-21a2-767f-a1e4-81f1dd796260',
+  partner: '019a6188-0568-7c6a-a6e7-cf04bb9d67a1',
+  notifyTypes: [ 'BEDTIME' ],
+  path: '/Accountability/updatePreferences'
+} => { request: '019a6191-1285-7dfe-9c94-8d4c01b6fd68' }
+Accountability.updatePreferences {
+  user: '019a6185-3574-7ea3-9f33-c193939360e8',
+  partner: '019a6188-0568-7c6a-a6e7-cf04bb9d67a1',
+  notifyTypes: [ 'BEDTIME' ]
+} => {}
+Requesting.respond { request: '019a6191-1285-7dfe-9c94-8d4c01b6fd68', success: true } => { request: '019a6191-1285-7dfe-9c94-8d4c01b6fd68' }
+[Requesting] Received request for path: /Accountability/_getPartnerships
+Requesting.request {
+  session: '019a618b-21a2-767f-a1e4-81f1dd796260',
+  path: '/Accountability/_getPartnerships'
+} => { request: '019a6191-1581-731b-b1e7-329996f6b1c6' }
+[GetMyPartnershipsRequest] Result frames: Frames(1) [
+  {
+    [Symbol(flow)]: "0f2cc549-e47e-411f-b469-a0541b5a01f0",
+    [Symbol(session)]: "019a618b-21a2-767f-a1e4-81f1dd796260",
+    [Symbol(request)]: "019a6191-1581-731b-b1e7-329996f6b1c6",
+    [Symbol(action_0)]: "56956009-df28-4bbb-97f7-f67b6233430a",
+    [Symbol(user)]: "019a6185-3574-7ea3-9f33-c193939360e8",
+    [Symbol(partnership)]: {
+      _id: "019a6190-fbeb-79e5-be02-6b2e7abc31d2",
+      user: "019a6185-3574-7ea3-9f33-c193939360e8",
+      partner: "019a6188-0568-7c6a-a6e7-cf04bb9d67a1",
+      notifyTypes: [ "BEDTIME" ],
+      lastReportDate: null
+    }
+  }
+]
+Requesting.respond {
+  request: '019a6191-1581-731b-b1e7-329996f6b1c6',
+  results: [ { partnership: [Object] } ]
+} => { request: '019a6191-1581-731b-b1e7-329996f6b1c6' }
+[Requesting] Received request for path: /CompetitionManager/_getCompetitionsForUser
+Requesting.request {
+  session: '019a618b-21a2-767f-a1e4-81f1dd796260',
+  path: '/CompetitionManager/_getCompetitionsForUser'
+} => { request: '019a6191-7f2d-74eb-975a-a58a8acbaf4c' }
+[GetMyCompetitionsRequest] Received request. session: 019a618b-21a2-767f-a1e4-81f1dd796260 request: 019a6191-7f2d-74eb-975a-a58a8acbaf4c
+[GetMyCompetitionsRequest] Initial frames: Frames(1) [
+  {
+    [Symbol(flow)]: "ad22d79d-363e-4dd0-9e85-36552b9cabff",
+    [Symbol(session)]: "019a618b-21a2-767f-a1e4-81f1dd796260",
+    [Symbol(request)]: "019a6191-7f2d-74eb-975a-a58a8acbaf4c",
+    [Symbol(action_0)]: "ce97727a-fdee-443c-92f9-4317ca2d63fb"
+  }
+]
+[GetMyCompetitionsRequest] After _getUser, frames: Frames(1) [
+  {
+    [Symbol(flow)]: "ad22d79d-363e-4dd0-9e85-36552b9cabff",
+    [Symbol(session)]: "019a618b-21a2-767f-a1e4-81f1dd796260",
+    [Symbol(request)]: "019a6191-7f2d-74eb-975a-a58a8acbaf4c",
+    [Symbol(action_0)]: "ce97727a-fdee-443c-92f9-4317ca2d63fb",
+    [Symbol(user)]: "019a6185-3574-7ea3-9f33-c193939360e8"
+  }
+]
+[GetMyCompetitionsRequest] Bound user: 019a6185-3574-7ea3-9f33-c193939360e8
+[_getCompetitionsForUser] input user: 019a6185-3574-7ea3-9f33-c193939360e8
+[_getCompetitionsForUser] found competitions: 1
+[_getCompetitionsForUser] sample competition: {
+  _id: "019a6190-cff4-7c05-8190-ffad2c15055f",
+  name: "Competition",
+  participants: [
+    "019a6185-3574-7ea3-9f33-c193939360e8",
+    "019a6188-0568-7c6a-a6e7-cf04bb9d67a1"
+  ],
+  startDate: 2025-11-03T00:00:00.000Z,
+  endDate: 2025-11-07T00:00:00.000Z,
+  active: true,
+  winners: null
+}
+[GetMyCompetitionsRequest] resultFrames (per competition): Frames(1) [
+  {
+    [Symbol(flow)]: "ad22d79d-363e-4dd0-9e85-36552b9cabff",
+    [Symbol(session)]: "019a618b-21a2-767f-a1e4-81f1dd796260",
+    [Symbol(request)]: "019a6191-7f2d-74eb-975a-a58a8acbaf4c",
+    [Symbol(action_0)]: "ce97727a-fdee-443c-92f9-4317ca2d63fb",
+    [Symbol(user)]: "019a6185-3574-7ea3-9f33-c193939360e8",
+    [Symbol(competition)]: {
+      _id: "019a6190-cff4-7c05-8190-ffad2c15055f",
+      name: "Competition",
+      participants: [
+        "019a6185-3574-7ea3-9f33-c193939360e8",
+        "019a6188-0568-7c6a-a6e7-cf04bb9d67a1"
+      ],
+      startDate: 2025-11-03T00:00:00.000Z,
+      endDate: 2025-11-07T00:00:00.000Z,
+      active: true,
+      winners: null
+    }
+  }
+]
+[GetMyCompetitionsRequest] Collected results: Frames(1) [
+  {
+    [Symbol(flow)]: "ad22d79d-363e-4dd0-9e85-36552b9cabff",
+    [Symbol(session)]: "019a618b-21a2-767f-a1e4-81f1dd796260",
+    [Symbol(request)]: "019a6191-7f2d-74eb-975a-a58a8acbaf4c",
+    [Symbol(action_0)]: "ce97727a-fdee-443c-92f9-4317ca2d63fb",
+    [Symbol(user)]: "019a6185-3574-7ea3-9f33-c193939360e8",
+    [Symbol(results)]: [
+      {
+        competition: {
+          _id: "019a6190-cff4-7c05-8190-ffad2c15055f",
+          name: "Competition",
+          participants: [Array],
+          startDate: 2025-11-03T00:00:00.000Z,
+          endDate: 2025-11-07T00:00:00.000Z,
+          active: true,
+          winners: null
+        }
+      }
+    ]
+  }
+]
+Requesting.respond {
+  request: '019a6191-7f2d-74eb-975a-a58a8acbaf4c',
+  results: [ { competition: [Object] } ]
+} => { request: '019a6191-7f2d-74eb-975a-a58a8acbaf4c' }
+[Requesting] Received request for path: /SleepSchedule/reportBedTime
+Requesting.request {
+  session: '019a618b-21a2-767f-a1e4-81f1dd796260',
+  reportedTimeStr: '2025-11-03T22:42',
+  dateStr: '2025-11-03',
+  path: '/SleepSchedule/reportBedTime'
+} => { request: '019a6191-8124-7cc2-b7ba-e87afee8a21f' }
+SleepSchedule.reportBedTime {
+  u: '019a6185-3574-7ea3-9f33-c193939360e8',
+  reportedTimeStr: '2025-11-03T22:42',
+  dateStr: '2025-11-03'
+} => { bedTimeSuccess: false }
+Accountability.recordFailure {
+  user: '019a6185-3574-7ea3-9f33-c193939360e8',
+  date: '2025-11-03',
+  failureType: 'BEDTIME'
+} => {}
+Accountability.updateReports { user: '019a6185-3574-7ea3-9f33-c193939360e8', date: '2025-11-03' } => {}
+CompetitionManager.recordStat {
+  u: '019a6185-3574-7ea3-9f33-c193939360e8',
+  dateStr: '2025-11-03',
+  eventType: 'BEDTIME',
+  success: false
+} => {}
+Requesting.respond {
+  request: '019a6191-8124-7cc2-b7ba-e87afee8a21f',
+  bedTimeSuccess: false
+} => { request: '019a6191-8124-7cc2-b7ba-e87afee8a21f' }
+[Requesting] Received request for path: /CompetitionManager/_getCompetitionsForUser
+Requesting.request {
+  session: '019a618b-21a2-767f-a1e4-81f1dd796260',
+  path: '/CompetitionManager/_getCompetitionsForUser'
+} => { request: '019a6191-90a9-7863-beae-48f31b6ff692' }
+[GetMyCompetitionsRequest] Received request. session: 019a618b-21a2-767f-a1e4-81f1dd796260 request: 019a6191-90a9-7863-beae-48f31b6ff692
+[GetMyCompetitionsRequest] Initial frames: Frames(1) [
+  {
+    [Symbol(flow)]: "bcdb2a96-15bc-4ac6-9733-c54dede015cd",
+    [Symbol(session)]: "019a618b-21a2-767f-a1e4-81f1dd796260",
+    [Symbol(request)]: "019a6191-90a9-7863-beae-48f31b6ff692",
+    [Symbol(action_0)]: "ecde2685-f6d8-4b32-9c83-a628bfbf390d"
+  }
+]
+[GetMyCompetitionsRequest] After _getUser, frames: Frames(1) [
+  {
+    [Symbol(flow)]: "bcdb2a96-15bc-4ac6-9733-c54dede015cd",
+    [Symbol(session)]: "019a618b-21a2-767f-a1e4-81f1dd796260",
+    [Symbol(request)]: "019a6191-90a9-7863-beae-48f31b6ff692",
+    [Symbol(action_0)]: "ecde2685-f6d8-4b32-9c83-a628bfbf390d",
+    [Symbol(user)]: "019a6185-3574-7ea3-9f33-c193939360e8"
+  }
+]
+[GetMyCompetitionsRequest] Bound user: 019a6185-3574-7ea3-9f33-c193939360e8
+[_getCompetitionsForUser] input user: 019a6185-3574-7ea3-9f33-c193939360e8
+[_getCompetitionsForUser] found competitions: 1
+[_getCompetitionsForUser] sample competition: {
+  _id: "019a6190-cff4-7c05-8190-ffad2c15055f",
+  name: "Competition",
+  participants: [
+    "019a6185-3574-7ea3-9f33-c193939360e8",
+    "019a6188-0568-7c6a-a6e7-cf04bb9d67a1"
+  ],
+  startDate: 2025-11-03T00:00:00.000Z,
+  endDate: 2025-11-07T00:00:00.000Z,
+  active: true,
+  winners: null
+}
+[GetMyCompetitionsRequest] resultFrames (per competition): Frames(1) [
+  {
+    [Symbol(flow)]: "bcdb2a96-15bc-4ac6-9733-c54dede015cd",
+    [Symbol(session)]: "019a618b-21a2-767f-a1e4-81f1dd796260",
+    [Symbol(request)]: "019a6191-90a9-7863-beae-48f31b6ff692",
+    [Symbol(action_0)]: "ecde2685-f6d8-4b32-9c83-a628bfbf390d",
+    [Symbol(user)]: "019a6185-3574-7ea3-9f33-c193939360e8",
+    [Symbol(competition)]: {
+      _id: "019a6190-cff4-7c05-8190-ffad2c15055f",
+      name: "Competition",
+      participants: [
+        "019a6185-3574-7ea3-9f33-c193939360e8",
+        "019a6188-0568-7c6a-a6e7-cf04bb9d67a1"
+      ],
+      startDate: 2025-11-03T00:00:00.000Z,
+      endDate: 2025-11-07T00:00:00.000Z,
+      active: true,
+      winners: null
+    }
+  }
+]
+[GetMyCompetitionsRequest] Collected results: Frames(1) [
+  {
+    [Symbol(flow)]: "bcdb2a96-15bc-4ac6-9733-c54dede015cd",
+    [Symbol(session)]: "019a618b-21a2-767f-a1e4-81f1dd796260",
+    [Symbol(request)]: "019a6191-90a9-7863-beae-48f31b6ff692",
+    [Symbol(action_0)]: "ecde2685-f6d8-4b32-9c83-a628bfbf390d",
+    [Symbol(user)]: "019a6185-3574-7ea3-9f33-c193939360e8",
+    [Symbol(results)]: [
+      {
+        competition: {
+          _id: "019a6190-cff4-7c05-8190-ffad2c15055f",
+          name: "Competition",
+          participants: [Array],
+          startDate: 2025-11-03T00:00:00.000Z,
+          endDate: 2025-11-07T00:00:00.000Z,
+          active: true,
+          winners: null
+        }
+      }
+    ]
+  }
+]
+Requesting.respond {
+  request: '019a6191-90a9-7863-beae-48f31b6ff692',
+  results: [ { competition: [Object] } ]
+} => { request: '019a6191-90a9-7863-beae-48f31b6ff692' }
+[Requesting] Received request for path: /CompetitionManager/_getLeaderboard
+Requesting.request {
+  session: '019a618b-21a2-767f-a1e4-81f1dd796260',
+  competitionId: '019a6190-cff4-7c05-8190-ffad2c15055f',
+  path: '/CompetitionManager/_getLeaderboard'
+} => { request: '019a6191-9296-7192-8144-d4b2c473038a' }
+[GetLeaderboardRequest] Collected results: Frames(1) [
+  {
+    [Symbol(flow)]: "f91d121b-9062-4364-a6d3-19b5710c636f",
+    [Symbol(session)]: "019a618b-21a2-767f-a1e4-81f1dd796260",
+    [Symbol(competitionId)]: "019a6190-cff4-7c05-8190-ffad2c15055f",
+    [Symbol(request)]: "019a6191-9296-7192-8144-d4b2c473038a",
+    [Symbol(action_0)]: "85c8b5a8-93e7-4cac-8f2f-0914e50de2c5",
+    [Symbol(results)]: [
+      {
+        entry: {
+          position: 1,
+          userId: "019a6185-3574-7ea3-9f33-c193939360e8",
+          totalScore: 0
+        }
+      },
+      {
+        entry: {
+          position: 1,
+          userId: "019a6188-0568-7c6a-a6e7-cf04bb9d67a1",
+          totalScore: 0
+        }
+      }
+    ]
+  }
+]
+Requesting.respond {
+  request: '019a6191-9296-7192-8144-d4b2c473038a',
+  results: [
+    {
+      position: 1,
+      userId: '019a6185-3574-7ea3-9f33-c193939360e8',
+      totalScore: 0
+    },
+    {
+      position: 1,
+      userId: '019a6188-0568-7c6a-a6e7-cf04bb9d67a1',
+      totalScore: 0
+    }
+  ]
+} => { request: '019a6191-9296-7192-8144-d4b2c473038a' }
+[Requesting] Received request for path: /CompetitionManager/endCompetition
+Requesting.request {
+  session: '019a618b-21a2-767f-a1e4-81f1dd796260',
+  competitionId: '019a6190-cff4-7c05-8190-ffad2c15055f',
+  path: '/CompetitionManager/endCompetition'
+} => { request: '019a6191-d54b-7cf7-9b4a-ba0436a35051' }
+CompetitionManager.endCompetition { competitionId: '019a6190-cff4-7c05-8190-ffad2c15055f' } => { winners: [ '019a6185-3574-7ea3-9f33-c193939360e8' ] }
+Requesting.respond {
+  request: '019a6191-d54b-7cf7-9b4a-ba0436a35051',
+  winners: [ '019a6185-3574-7ea3-9f33-c193939360e8' ]
+} => { request: '019a6191-d54b-7cf7-9b4a-ba0436a35051' }
+[Requesting] Received request for path: /CompetitionManager/_getLeaderboard
+Requesting.request {
+  session: '019a618b-21a2-767f-a1e4-81f1dd796260',
+  competitionId: '019a6190-cff4-7c05-8190-ffad2c15055f',
+  path: '/CompetitionManager/_getLeaderboard'
+} => { request: '019a6191-d7eb-7b84-b5e9-7d60c5439c9c' }
+[GetLeaderboardRequest] Collected results: Frames(1) [
+  {
+    [Symbol(flow)]: "6b9ed818-5792-4aa7-9769-8a6c39ac5810",
+    [Symbol(session)]: "019a618b-21a2-767f-a1e4-81f1dd796260",
+    [Symbol(competitionId)]: "019a6190-cff4-7c05-8190-ffad2c15055f",
+    [Symbol(request)]: "019a6191-d7eb-7b84-b5e9-7d60c5439c9c",
+    [Symbol(action_0)]: "2c5f9ef2-cd38-4362-b004-8c531046a19a",
+    [Symbol(results)]: [
+      {
+        entry: {
+          position: 1,
+          userId: "019a6185-3574-7ea3-9f33-c193939360e8",
+          totalScore: -9
+        }
+      },
+      {
+        entry: {
+          position: 2,
+          userId: "019a6188-0568-7c6a-a6e7-cf04bb9d67a1",
+          totalScore: -10
+        }
+      }
+    ]
+  }
+]
+Requesting.respond {
+  request: '019a6191-d7eb-7b84-b5e9-7d60c5439c9c',
+  results: [
+    {
+      position: 1,
+      userId: '019a6185-3574-7ea3-9f33-c193939360e8',
+      totalScore: -9
+    },
+    {
+      position: 2,
+      userId: '019a6188-0568-7c6a-a6e7-cf04bb9d67a1',
+      totalScore: -10
+    }
+  ]
+} => { request: '019a6191-d7eb-7b84-b5e9-7d60c5439c9c' }
+[Requesting] Received request for path: /Sessioning/delete
+Requesting.request {
+  session: '019a618b-21a2-767f-a1e4-81f1dd796260',
+  path: '/Sessioning/delete'
+} => { request: '019a6192-09ce-7d04-bb42-1a70e4ae59ff' }
+Sessioning.delete { session: '019a618b-21a2-767f-a1e4-81f1dd796260' } => {}
+Requesting.respond {
+  request: '019a6192-09ce-7d04-bb42-1a70e4ae59ff',
+  status: 'logged_out'
+} => { request: '019a6192-09ce-7d04-bb42-1a70e4ae59ff' }
+[Requesting] Received request for path: /PasswordAuth/authenticate
+Requesting.request {
+  username: 'Timothy',
+  password: 'Yab101',
+  path: '/PasswordAuth/authenticate'
+} => { request: '019a6192-4437-73dd-91c8-9032b793c64a' }
+PasswordAuth.authenticate { username: 'Timothy', password: 'Yab101' } => { user: '019a6188-0568-7c6a-a6e7-cf04bb9d67a1' }
+Sessioning.create { user: '019a6188-0568-7c6a-a6e7-cf04bb9d67a1' } => { session: '019a6192-44b6-7915-b852-a96275d5b8c0' }
+Requesting.respond {
+  request: '019a6192-4437-73dd-91c8-9032b793c64a',
+  session: '019a6192-44b6-7915-b852-a96275d5b8c0'
+} => { request: '019a6192-4437-73dd-91c8-9032b793c64a' }
