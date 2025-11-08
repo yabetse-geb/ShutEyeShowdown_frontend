@@ -79,19 +79,23 @@ export default {
       let hours24 = null;
       let minutes = null;
 
-      if (typeof timeStr === "string" && timeStr.includes("T")) {
-        // ISO string from backend (UTC). Convert to local time.
-        const d = new Date(timeStr);
-        if (!isNaN(d.getTime())) {
-          hours24 = d.getHours();
-          minutes = d.getMinutes();
-        }
-      }
+      // Extract time directly from ISO string without timezone conversion
+      // The backend stores times as entered by the user (local time), not UTC
+      if (typeof timeStr === "string") {
+        let timePart = "";
 
-      if (hours24 === null || minutes === null) {
-        // Fallback: assume HH:MM string
-        const t = timeStr.includes("T") ? timeStr.split("T")[1] : timeStr;
-        const hhmm = t.substring(0, 5);
+        if (timeStr.includes("T")) {
+          // ISO format: extract the time part before any timezone indicator
+          const tPart = timeStr.split("T")[1];
+          // Remove timezone suffix (Z, +HH:MM, -HH:MM) if present
+          timePart = tPart.split(/[Z+-]/)[0];
+        } else {
+          // Already just a time string
+          timePart = timeStr;
+        }
+
+        // Extract HH:MM from the time part
+        const hhmm = timePart.substring(0, 5);
         const parts = hhmm.split(":");
         if (parts.length >= 2) {
           hours24 = parseInt(parts[0], 10);
@@ -103,7 +107,11 @@ export default {
         hours24 === null ||
         minutes === null ||
         isNaN(hours24) ||
-        isNaN(minutes)
+        isNaN(minutes) ||
+        hours24 < 0 ||
+        hours24 > 23 ||
+        minutes < 0 ||
+        minutes > 59
       ) {
         return "";
       }
